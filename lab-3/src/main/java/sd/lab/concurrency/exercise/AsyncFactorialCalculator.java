@@ -40,6 +40,6 @@ public interface AsyncFactorialCalculator {
      * @return a new instance of {@link AsyncFactorialCalculator}
      */
     static AsyncFactorialCalculator newInstance(ExecutorService executorService) {
-        return new AsyncFactorialCalculatorImpl(executorService);
+        throw new Error("TODO: implement");
     }
 }

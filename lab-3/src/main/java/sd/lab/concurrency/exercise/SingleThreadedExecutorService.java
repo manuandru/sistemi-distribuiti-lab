@@ -18,17 +18,11 @@ public class SingleThreadedExecutorService implements ExecutorService {
 
     private void backgroundThreadMain() {
         try {
-            while (!backgroundThread.isInterrupted()) {
-                if (tasks.isEmpty() && shutdown) {
-                    return;
-                } else {
-                    tasks.take().run();
-                }
-            }
-        } catch (InterruptedException ignored) {
+            throw new Error("TODO: implement");
+        } /*catch (InterruptedException ignored) {
             // do nothing
-        } finally {
-            termination.complete(null);
+        } */ finally {
+            throw new Error("TODO: implement");
         }
     }
 
@@ -58,54 +52,30 @@ public class SingleThreadedExecutorService implements ExecutorService {
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        try {
-            termination.get(timeout, unit);
-            return true;
-        } catch (ExecutionException ignored) {
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        }
+        throw new Error("TODO: implement");
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        if (shutdown) throw new RejectedExecutionException();
-        final CompletableFuture<T> result = new CompletableFuture<>();
-        tasks.add(() -> {
-            try {
-                result.complete(task.call());
-            } catch (Exception e) {
-                result.completeExceptionally(e);
-            }
-        });
-        return result;
+        throw new Error("TODO: implement");
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        if (shutdown) throw new RejectedExecutionException();
-        final CompletableFuture<T> promise = new CompletableFuture<>();
-        tasks.add(() -> {
-            try {
-                task.run();
-                promise.complete(result);
-            } catch (Exception e) {
-                promise.completeExceptionally(e);
-            }
-        });
-        return promise;
+        throw new Error("TODO: implement");
     }
 
     @Override
     public Future<?> submit(Runnable task) {
-        return submit(task, null);
+        throw new Error("TODO: implement");
     }
 
     @Override
     public void execute(Runnable command) {
-        submit(command);
+        throw new Error("TODO: implement");
     }
+
+    // ignore the following methods: they are not tested
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
