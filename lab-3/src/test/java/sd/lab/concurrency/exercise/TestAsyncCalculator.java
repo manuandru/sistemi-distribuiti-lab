@@ -31,7 +31,7 @@ public class TestAsyncCalculator {
 
     @Test
     public void testTrivialResults() throws ExecutionException, InterruptedException {
-        final AsyncCalculator calculator = AsyncCalculator.newInstance(ex);
+        final AsyncFactorialCalculator calculator = AsyncFactorialCalculator.newInstance(ex);
 
         final List<CompletableFuture<BigInteger>> results = IntStream.rangeClosed(0, 10)
                 .mapToObj(calculator::factorial)
@@ -44,7 +44,7 @@ public class TestAsyncCalculator {
 
     @Test
     public void testComputationIsProperlySplit() throws ExecutionException, InterruptedException {
-        final AsyncCalculator calculator = AsyncCalculator.newInstance(ex);
+        final AsyncFactorialCalculator calculator = AsyncFactorialCalculator.newInstance(ex);
 
         final BigInteger factorialOf100 = new BigInteger("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000");
 
@@ -60,7 +60,7 @@ public class TestAsyncCalculator {
 
     @Test
     public void testFailure() throws InterruptedException {
-        final AsyncCalculator calculator = AsyncCalculator.newInstance(ex);
+        final AsyncFactorialCalculator calculator = AsyncFactorialCalculator.newInstance(ex);
 
         final CompletableFuture<BigInteger> failedResult = calculator.factorial(-1);
 

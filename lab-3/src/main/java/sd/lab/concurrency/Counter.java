@@ -2,6 +2,9 @@ package sd.lab.concurrency;
 
 import java.util.Objects;
 
+/**
+ * An ordinary synchronous counter
+ */
 public final class Counter {
     private int value;
 

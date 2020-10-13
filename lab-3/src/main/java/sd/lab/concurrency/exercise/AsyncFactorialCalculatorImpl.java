@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-public class AsyncCalculatorImpl implements AsyncCalculator {
+public class AsyncFactorialCalculatorImpl implements AsyncFactorialCalculator {
 
     private final ExecutorService executorService;
 
-    AsyncCalculatorImpl(ExecutorService e) {
+    AsyncFactorialCalculatorImpl(ExecutorService e) {
         this.executorService = Objects.requireNonNull(e);
     }
 

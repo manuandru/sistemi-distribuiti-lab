@@ -2,6 +2,9 @@ package sd.lab.concurrency;
 
 import java.math.BigInteger;
 
+/**
+ * Utility methods for computing factorials in a synchronous way
+ */
 public class MathUtils {
     public static BigInteger factorial(long value) {
         return factorial(BigInteger.valueOf(value));
