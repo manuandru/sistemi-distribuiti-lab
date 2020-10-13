@@ -1,6 +1,5 @@
 package sd.lab.concurrency;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -9,8 +8,8 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
-import static sd.lab.concurrency.AssertUtils.assertOneOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
 public class FuturesExamples {
@@ -87,7 +86,7 @@ public class FuturesExamples {
      */
     @Test
     public void exceptionsCompleteFuturesExceptionally() throws InterruptedException {
-        final ExecutorService ex = Executors.newSingleThreadExecutor(); // multithreaded executor
+        final ExecutorService ex = Executors.newSingleThreadExecutor();
         final List<Integer> events = new LinkedList<>();
         final Supplier<Boolean> alwaysTrue = () -> true;
 
