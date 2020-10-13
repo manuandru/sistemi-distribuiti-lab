@@ -3,7 +3,8 @@ package sd.lab.concurrency;
 import java.math.BigInteger;
 
 /**
- * Utility methods for computing factorials in a synchronous way
+ * Utility methods for computing factorials in a synchronous way.
+ * This is just here for enabling the automatic testing of your exercises.
  */
 public class MathUtils {
     public static BigInteger factorial(long value) {

@@ -26,11 +26,10 @@ public class SplittingComputationsExamples {
         y = new Counter(0);
     }
 
-    @After
-    public void tearDown(){
-        ex.shutdownNow();
-    }
-
+    /**
+     * Increases {@link #x} up to <code>max</code>, asynchronously
+     * @param max
+     */
     private void incCounterUpTo(int max) {
         events.add(x.getValue());
         x.inc();
@@ -38,16 +37,6 @@ public class SplittingComputationsExamples {
         if (x.getValue() < max) {
             ex.execute(() -> incCounterUpTo(max)); // async recursion
         }
-    }
-
-    @Test
-    public void loopOnExecutors() {
-
-        ex.execute(() -> incCounterUpTo(5));
-
-        suspendCurrentThread(1, TimeUnit.SECONDS);
-
-        assertEquals(List.of(0, 1, 2, 3, 4), events);
     }
 
     private void decCounterDownTo(int min) {
@@ -59,9 +48,30 @@ public class SplittingComputationsExamples {
         }
     }
 
+    @After
+    public void tearDown(){
+        ex.shutdownNow();
+    }
+
+    /**
+     * A simple example of how an asynchronous computation can be carried out on a single threaded executor
+     */
+    @Test
+    public void loopOnExecutors() {
+
+        ex.execute(() -> incCounterUpTo(5));
+
+        suspendCurrentThread(1, TimeUnit.SECONDS);
+
+        assertEquals(List.of(0, 1, 2, 3, 4), events);
+    }
+
+    /**
+     * A simple example of how SEVERAL asynchronous computations can be carried out on a SINGLE threaded executor,
+     * in a concurrent way
+     */
     @Test
     public void twoConcurrentActivities() {
-
         ex.execute(() -> {
             ex.execute(() -> incCounterUpTo(5));
             ex.execute(() -> decCounterDownTo(-5));

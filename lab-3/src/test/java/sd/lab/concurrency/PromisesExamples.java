@@ -4,9 +4,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 
@@ -24,6 +27,11 @@ public class PromisesExamples {
         ex.shutdownNow();
     }
 
+    /**
+     * Starts an asynchronous activity aimed at increasing a counter from 0 to <code>max</code>
+     * @param max
+     * @return a {@link CompletableFuture} letting clients know when the activity is over
+     */
     public CompletableFuture<Integer> incCounterUpTo(int max) {
         final CompletableFuture<Integer> result = new CompletableFuture<>();
         ex.execute(() -> incCounterUpToImpl(new Counter(0), max, result));
@@ -40,25 +48,37 @@ public class PromisesExamples {
         }
     }
 
+    /**
+     * Example showing how to await for a {@link CompletableFuture}'s result
+     */
     @Test
     public void completableFutureExample1() throws ExecutionException, InterruptedException {
-
         final CompletableFuture<Integer> promisedResult = incCounterUpTo(5);
 
-        assertEquals(Integer.valueOf(5), promisedResult.get());
+        Integer actualResult = promisedResult.get(); // this is where the result is awaited
+        assertEquals(Integer.valueOf(5), actualResult);
     }
 
+    /**
+     * Method {@link CompletableFuture#thenApply(Function)} is to {@link CompletableFuture} what
+     * {@link java.util.stream.Stream#map(Function)} is to {@link java.util.stream.Stream}: it returns a novel
+     * {@link CompletableFuture} attained by applying the provided {@link Function} to the source
+     * {@link CompletableFuture}'s result, whenever it becomes available
+     */
     @Test
     public void completableFutureExample2() throws ExecutionException, InterruptedException {
-
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5).thenApply(r -> r * 2);
+        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5)
+                .thenApply(r -> r * 2);
 
         assertEquals(Integer.valueOf(10), promisedResult.get());
     }
 
+    /**
+     * Method {@link CompletableFuture#whenComplete(BiConsumer)} lets clients register a callback aimed at intercepting
+     * the completion of a {@link CompletableFuture}, without creating a new {@link CompletableFuture}
+     */
     @Test
     public void completableFutureExample3() throws ExecutionException, InterruptedException {
-
         final List<Integer> events = new LinkedList<>();
 
         final CompletableFuture<Integer> promisedResult = incCounterUpTo(5)
@@ -69,6 +89,11 @@ public class PromisesExamples {
         assertEquals(List.of(5), events);
     }
 
+    /**
+     * The static method {@link CompletableFuture#anyOf(CompletableFuture[])} accepts a number of {@link CompletableFuture}s
+     * and returns a novel {@link CompletableFuture} which is completed as soon as one of the aforementioned
+     * {@link CompletableFuture}s complete
+     */
     @Test
     public void joinPromisesOR() throws ExecutionException, InterruptedException {
 
@@ -81,6 +106,11 @@ public class PromisesExamples {
 
     }
 
+    /**
+     * The static method {@link CompletableFuture#allOf(CompletableFuture[])} accepts a number of {@link CompletableFuture}s
+     * and returns a novel {@link CompletableFuture} which is completed as soon as ALL the aforementioned
+     * {@link CompletableFuture}s complete
+     */
     @Test
     public void joinPromisesAND() throws ExecutionException, InterruptedException {
 
@@ -96,7 +126,5 @@ public class PromisesExamples {
         assertTrue(million.isDone());
         assertTrue(thousand.isDone());
         assertTrue(ten.isDone());
-
     }
-
 }
