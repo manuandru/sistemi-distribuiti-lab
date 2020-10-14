@@ -10,7 +10,6 @@ group = "sd.lab"
 version = "1.0-SNAPSHOT"
 
 dependencies {
-    implementation("org.javatuples", "javatuples", "1.2")
     testImplementation("junit", "junit", "4.12")
 }
 
