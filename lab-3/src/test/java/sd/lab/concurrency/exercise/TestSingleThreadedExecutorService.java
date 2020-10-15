@@ -1,9 +1,6 @@
 package sd.lab.concurrency.exercise;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import sd.lab.concurrency.Counter;
 import sd.lab.concurrency.MathUtils;
 
@@ -20,6 +17,7 @@ import static org.junit.Assert.*;
 import static sd.lab.concurrency.AssertUtils.assertOneOf;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
+@Ignore
 public class TestSingleThreadedExecutorService {
     private ExecutorService ex;
 
