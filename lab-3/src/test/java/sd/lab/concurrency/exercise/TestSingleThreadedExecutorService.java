@@ -1,8 +1,8 @@
 package sd.lab.concurrency.exercise;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import sd.lab.concurrency.Counter;
 import sd.lab.concurrency.MathUtils;
@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 import static sd.lab.concurrency.AssertUtils.assertOneOf;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
-@Ignore
 public class TestSingleThreadedExecutorService {
     private ExecutorService ex;
 
@@ -153,11 +152,11 @@ public class TestSingleThreadedExecutorService {
     }
 
     @Test
-    public void exceptionsCompleteFuturesExceptionally() throws InterruptedException {
+    public void exceptionsCompleteFuturesExceptionally() throws InterruptedException, ExecutionException {
         final List<Integer> events = new LinkedList<>();
         final Supplier<Boolean> alwaysTrue = () -> true;
 
-        Future<Integer> task = ex.submit(() -> {
+        Future<Integer> task1 = ex.submit(() -> {
             if (alwaysTrue.get()) {
                 throw new NullPointerException();
             }
@@ -167,19 +166,59 @@ public class TestSingleThreadedExecutorService {
 
         ex.execute(() -> events.add(2));
 
+        Future<Integer> task2 = ex.submit(() -> {
+            if (alwaysTrue.get()) {
+                throw new IllegalStateException();
+            }
+            events.add(3);
+        }, 3);
+
+        ex.execute(() -> events.add(4));
+
+        Future<?> task3 = ex.submit(() -> {
+            if (alwaysTrue.get()) {
+                throw new IllegalArgumentException();
+            }
+            events.add(5);
+        });
+
+        ex.execute(() -> events.add(6));
+
+        ex.execute(() -> {
+            if (alwaysTrue.get()) {
+                throw new IllegalCallerException();
+            }
+            events.add(7);
+        });
+
+        ex.execute(() -> events.add(8));
+
+        Future<?> task4 = ex.submit(() -> {
+            events.add(9);
+        });
+
         ex.shutdown();
         ex.awaitTermination(1, TimeUnit.SECONDS);
 
-        assertEquals(List.of(2), events);
+        assertEquals(List.of(2, 4, 6, 8, 9), events);
 
-        // notice that task should be failed at this point, because of the NullPointerException...
         try {
-            // ... thus, any attempt to retrieve the result of task ...
-            task.get();
-        } catch (ExecutionException e) { // ... will produce an ExecutionException
-            // notice that the cause of e will be the same NullPointerException which made task fail
+            task1.get();
+        } catch (ExecutionException e) {
             assertTrue(e.getCause() instanceof NullPointerException);
         }
+        try {
+            task2.get();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause() instanceof IllegalStateException);
+        }
+        try {
+            task3.get();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause() instanceof IllegalArgumentException);
+        }
+        Assert.assertTrue(task4.isDone());
+        Assert.assertNull(task4.get());
     }
 
     /**
