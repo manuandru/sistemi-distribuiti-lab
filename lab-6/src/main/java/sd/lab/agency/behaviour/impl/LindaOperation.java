@@ -6,14 +6,14 @@ import sd.lab.linda.textual.TextualSpace;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class LindaOperation extends AwaitPromise<StringTuple> {
+public abstract class LindaOperation<T> extends AwaitPromise<T> {
 
     public abstract String getTextualSpaceName();
 
-    public abstract CompletableFuture<StringTuple> invokeOperation(TextualSpace textualSpace);
+    public abstract CompletableFuture<T> invokeOperation(TextualSpace textualSpace);
 
     @Override
-    public CompletableFuture<StringTuple> invokeAsync(Agent agent) {
+    public CompletableFuture<T> invokeAsync(Agent agent) {
         TextualSpace textualSpace = agent.getEnvironment().getTextualSpace(getTextualSpaceName());
         return invokeOperation(textualSpace);
     }

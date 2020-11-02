@@ -27,7 +27,7 @@ public abstract class AbstractAgent extends ThreadBasedAgentFSM implements Agent
     }
 
     @Override
-    public void onRun() throws Exception {
+    public final void onRun() throws Exception {
         if (toDoList.isEmpty()) {
             pause();
         } else {

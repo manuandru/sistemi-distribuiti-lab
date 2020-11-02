@@ -14,7 +14,7 @@ public interface TupleSpace<T extends Tuple, TT extends Template> {
 
     CompletableFuture<MultiSet<? extends T>> get();
 
-    CompletableFuture<Integer> getSize();
+    CompletableFuture<Integer> count();
     
     String getName();
 }

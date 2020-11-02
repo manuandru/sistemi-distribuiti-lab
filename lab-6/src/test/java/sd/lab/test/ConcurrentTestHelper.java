@@ -19,7 +19,7 @@ public class ConcurrentTestHelper {
     
     private static final Duration BLOCKING_THRESHOLD = Duration.ofSeconds(3);
     private static final Duration GET_THRESHOLD = Duration.ofSeconds(1);
-    private static final Duration MAX_WAIT_THRESHOLD = Duration.ofSeconds(5);
+    private static final Duration MAX_WAIT_THRESHOLD = Duration.ofSeconds(10);
 
 
     @FunctionalInterface
@@ -101,12 +101,16 @@ public class ConcurrentTestHelper {
     public <T> void assertOneOf(Future<T> actualFuture, T expected1, @SuppressWarnings("unchecked") T... expected) {
         try {
             final T actual = actualFuture.get(GET_THRESHOLD.toMillis(), TimeUnit.MILLISECONDS);
-            final Set<T> set = new HashSet<>(Arrays.asList(expected));
-            set.add(expected1);
-            assertTrue(set.contains(actual));
+            assertOneOf(actual, expected1, expected);
         }  catch (InterruptedException | ExecutionException | TimeoutException e) {
         	fail(e);
         }         
+    }
+
+    public <T> void assertOneOf(T actual, T expected1, @SuppressWarnings("unchecked") T... expected) {
+        final Set<T> set = new HashSet<>(Arrays.asList(expected));
+        set.add(expected1);
+        assertTrue(set.contains(actual));
     }
     
     public void assertBlocksIndefinitely(Future<?> future, String message) {

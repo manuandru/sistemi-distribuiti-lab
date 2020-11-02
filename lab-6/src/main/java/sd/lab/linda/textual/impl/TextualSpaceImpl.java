@@ -63,7 +63,7 @@ public class TextualSpaceImpl implements TextualSpace {
     }
 
     @Override
-    public CompletableFuture<Integer> getSize() {
+    public CompletableFuture<Integer> count() {
         log("Requested `getSize` operation");
         final CompletableFuture<Integer> promise = new CompletableFuture<>();
         executor.execute(() -> this.handleGetSize(promise));

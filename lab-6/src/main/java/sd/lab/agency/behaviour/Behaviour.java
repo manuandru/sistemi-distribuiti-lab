@@ -1,7 +1,9 @@
 package sd.lab.agency.behaviour;
 
+import org.apache.commons.collections4.MultiSet;
 import sd.lab.agency.Agent;
 import sd.lab.agency.behaviour.impl.*;
+import sd.lab.agency.fsm.AgentFSM;
 import sd.lab.linda.textual.RegexTemplate;
 import sd.lab.linda.textual.StringTuple;
 import sd.lab.utils.Action;
@@ -32,6 +34,10 @@ public interface Behaviour {
 
     /// STATIC FACTORIES
 
+    static Behaviour stopAgent() {
+        return AgentFSM::stop;
+    }
+
     static Behaviour of(Action<? extends Exception> action) {
         return agent -> action.execute();
     }
@@ -52,7 +58,7 @@ public interface Behaviour {
         return new Parallel(Parallel.TerminationCriterion.ANY, b, bs);
     }
 
-    static Behaviour wait(Duration duration) {
+    static Behaviour waitFor(Duration duration) {
         return new Wait(duration);
     }
 
@@ -135,6 +141,44 @@ public interface Behaviour {
         return rd(tupleSpace, () -> template, onTupleRead);
     }
 
+    static Behaviour get(String tupleSpace, Consumer<MultiSet<StringTuple>> onTuplesRead) {
+        return new Get() {
+            @Override
+            public String getTextualSpaceName() {
+                return tupleSpace;
+            }
+
+            @Override
+            public void onResult(Agent agent, MultiSet<StringTuple> result) throws Exception {
+                onTuplesRead.accept(result);
+            }
+
+            @Override
+            public Behaviour deepClone() {
+                return get(tupleSpace, onTuplesRead);
+            }
+        };
+    }
+
+    static Behaviour count(String tupleSpace, Consumer<Integer> onTuplesCounted) {
+        return new Count() {
+            @Override
+            public String getTextualSpaceName() {
+                return tupleSpace;
+            }
+
+            @Override
+            public void onResult(Agent agent, Integer result) throws Exception {
+                onTuplesCounted.accept(result);
+            }
+
+            @Override
+            public Behaviour deepClone() {
+                return count(tupleSpace, onTuplesCounted);
+            }
+        };
+    }
+
     /// DEFAULT OPERATORS
 
     default Behaviour addTo(Agent agent) {
@@ -157,6 +201,22 @@ public interface Behaviour {
 
     default Behaviour andThen(Action1<Agent, ? extends Exception> action) {
         return andThen(Behaviour.of(action));
+    }
+
+    default Behaviour repeatManyTimes(int times) {
+        return new DoWhile(this) {
+            private int i = 0;
+
+            @Override
+            public Behaviour deepClone() {
+                return Behaviour.this.deepClone().repeatManyTimes(times);
+            }
+
+            @Override
+            public boolean condition() {
+                return ++i < times;
+            }
+        };
     }
 
     default Behaviour repeatWhile(Supplier<Boolean> condition) {

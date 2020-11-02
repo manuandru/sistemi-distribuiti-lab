@@ -5,22 +5,17 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import sd.lab.agency.Environment;
 import sd.lab.agency.fsm.AgentFSM;
-import sd.lab.agency.fsm.impl.ThreadBasedAgentFSM;
 import sd.lab.agency.impl.AbstractAgent;
-import sd.lab.agency.impl.MultiThreadedEnvironment;
-import sd.lab.test.ConcurrentTestHelper;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @RunWith(Parameterized.class)
 public class TestAgent {
@@ -192,7 +187,7 @@ public class TestAgent {
 
             @Override
             public void setup() {
-                Behaviour.wait(toWait)
+                Behaviour.waitFor(toWait)
                         .andThen(AgentFSM::stop)
                         .addTo(this);
             }
@@ -215,7 +210,7 @@ public class TestAgent {
             @Override
             public void setup() {
                 Behaviour.anyOf(
-                        Behaviour.wait(toWait),
+                        Behaviour.waitFor(toWait),
                         Behaviour.of(() -> xs.add(i.getAndIncrement())).repeatForEver()
                 ).andThen(AgentFSM::stop)
                 .addTo(this);

@@ -62,7 +62,7 @@ public class TestTextualSpace {
             
             @Override 
             public void onRun() throws Exception {
-                test.assertEquals(tupleSpace.getSize(), 0, "The tuple space must initially be empty");
+                test.assertEquals(tupleSpace.count(), 0, "The tuple space must initially be empty");
                 stop();
             }
 
@@ -140,9 +140,9 @@ public class TestTextualSpace {
             
             @Override 
             public void onRun() throws Exception {
-                test.assertEquals(tupleSpace.getSize(), 0, "The tuple space must initially be empty");
+                test.assertEquals(tupleSpace.count(), 0, "The tuple space must initially be empty");
                 test.assertEquals(tupleSpace.out("foo"), StringTuple.of("foo"), "A write operation eventually return the same tuple it received as argument");
-                test.assertEquals(tupleSpace.getSize(), 1, "After a tuple was written, the tuple space size should increase");
+                test.assertEquals(tupleSpace.count(), 1, "After a tuple was written, the tuple space size should increase");
                 stop();
             }
 
@@ -375,16 +375,16 @@ public class TestTextualSpace {
             
             @Override 
             public void onRun() throws Exception {
-            	test.assertEquals(tupleSpace.getSize(), 0);
+            	test.assertEquals(tupleSpace.count(), 0);
             	test.assertEventuallyReturns(tupleSpace.out("a"));
-            	test.assertEquals(tupleSpace.getSize(), 1);
+            	test.assertEquals(tupleSpace.count(), 1);
             	test.assertEventuallyReturns(tupleSpace.out("a"));
-            	test.assertEquals(tupleSpace.getSize(), 2);
+            	test.assertEquals(tupleSpace.count(), 2);
             	test.assertEventuallyReturns(tupleSpace.out("a"));
-            	test.assertEquals(tupleSpace.getSize(), 3);
+            	test.assertEquals(tupleSpace.count(), 3);
             	
             	test.assertEventuallyReturns(tupleSpace.in("a"));
-            	test.assertEquals(tupleSpace.getSize(), 2);
+            	test.assertEquals(tupleSpace.count(), 2);
                 
                 stop();
             }

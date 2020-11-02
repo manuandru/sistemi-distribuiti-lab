@@ -6,7 +6,7 @@ import sd.lab.linda.textual.TextualSpace;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class Rd extends LindaOperation {
+public abstract class Rd extends LindaOperation<StringTuple> {
     @Override
     public abstract String getTextualSpaceName();
 
