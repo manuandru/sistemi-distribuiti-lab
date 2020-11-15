@@ -6,12 +6,12 @@ import java.util.Objects;
 
 public final class StringTuple implements Tuple {
 
-    public static StringTuple of(String regex) {
-        return new StringTuple(regex);
+    public static StringTuple of(String text) {
+        return new StringTuple(text);
     }
-    
+
     private final String value;
-    
+
     private StringTuple(final String value) {
         this.value = Objects.requireNonNull(value);
     }
