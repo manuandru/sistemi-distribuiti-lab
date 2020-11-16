@@ -49,7 +49,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
     public void get(Context context) throws Exception {
         var api = getApi(context);
         var tupleSpaceName = context.pathParam("tupleSpaceName");
-        var body = context.body();
+        var templateString = context.queryParam("template");
         var count = context.queryParam("count", Boolean.class, "true").get();
 
         if (count) {
@@ -57,8 +57,8 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
                     api.countTuples(tupleSpaceName)
                             .thenAcceptAsync(Presentation.serializerOf(Number.class)::serialize)
             );
-        } else if (!body.isBlank()) {
-            var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(body);
+        } else if (templateString != null && !templateString.isBlank()) {
+            var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
                     api.readTuple(tupleSpaceName, template)
                             .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
@@ -75,16 +75,16 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
     public void delete(Context context) throws Exception {
         var api = getApi(context);
         var tupleSpaceName = context.pathParam("tupleSpaceName");
-        var body = context.body();
+        var templateString = context.queryParam("template");
 
-        if (!body.isBlank()) {
-            var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(body);
+        if (templateString != null && !templateString.isBlank()) {
+            var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
                     api.consumeTuple(tupleSpaceName, template)
                             .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
             );
         } else {
-            throw new BadRequestResponse("Missing template");
+            throw new BadRequestResponse("Missing template in path");
         }
     }
 
@@ -101,7 +101,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
                             .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
             );
         } else {
-            throw new BadRequestResponse("Missing tuple");
+            throw new BadRequestResponse("Missing tuple in body");
         }
     }
 

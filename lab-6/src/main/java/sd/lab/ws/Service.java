@@ -21,7 +21,9 @@ public class Service {
     public static Javalin startService(int port) {
         var textualSpaceStorage = TextualSpaceStorage.getInstance();
 
-        var server = Javalin.create().start(port);
+        var server = Javalin.create(config -> {
+            config.enableDevLogging();
+        }).start(port);
 
         server.before(Filters.putSingleton(textualSpaceStorage));
 
