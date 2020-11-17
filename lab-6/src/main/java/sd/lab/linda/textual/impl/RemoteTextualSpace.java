@@ -1,17 +1,15 @@
 package sd.lab.linda.textual.impl;
 
-import kotlin.text.Charsets;
+
 import org.apache.commons.collections4.MultiSet;
-import sd.lab.linda.core.Template;
+import org.apache.commons.collections4.multiset.HashMultiSet;
+import sd.lab.linda.core.RemoteException;
 import sd.lab.linda.textual.RegexTemplate;
 import sd.lab.linda.textual.StringTuple;
 import sd.lab.linda.textual.TextualSpace;
-import sd.lab.ws.presentation.Deserializer;
+import sd.lab.ws.Service;
 import sd.lab.ws.presentation.Presentation;
-import sd.lab.ws.presentation.Serializer;
-import sd.lab.ws.presentation.impl.StringTupleSerializer;
 
-import java.io.ObjectStreamException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -20,25 +18,23 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandler;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
-import static sd.lab.ws.presentation.Presentation.deserializerOf;
-import static sd.lab.ws.presentation.Presentation.serializerOf;
+import java.util.function.Function;
 
 public class RemoteTextualSpace implements TextualSpace {
 
     private static final BodyHandler<String> BODY_TO_STRING = BodyHandlers.ofString(StandardCharsets.UTF_8);
 
     private final HttpClient client = HttpClient.newHttpClient();
-    private final URI host;
     private final String name;
-    private final URI tupleSpace;
+    private final URI tupleSpaceUri;
 
     public RemoteTextualSpace(URI host, String name) {
-        this.host = Objects.requireNonNull(host);
+        Objects.requireNonNull(host);
         this.name = Objects.requireNonNull(name);
-        this.tupleSpace = host.resolve("/linda/v1/tuple-spaces/" + name);
+        this.tupleSpaceUri = host.resolve("/linda/v" + Service.API_VERSION + "/tuple-spaces/" + name);
     }
 
     private static URI queryParam(URI base, String key, Object value) {
@@ -51,47 +47,107 @@ public class RemoteTextualSpace implements TextualSpace {
         return queryParam(queryParam(base, key1, value1), key2, value2);
     }
 
-    private URI tupleSpaceWithQuery(String key, Object value) {
-        return queryParam(tupleSpace, key, value);
+    private URI tupleSpaceUriWithQuery(String key, Object value) {
+        return queryParam(tupleSpaceUri, key, value);
     }
 
-    private URI tupleSpaceWithQuery(String key1, Object value1, String key2, Object value2) {
-        return queryParam(tupleSpace, key1, value1, key2, value2);
+    private URI tupleSpaceUriWithQuery(String key1, Object value1, String key2, Object value2) {
+        return queryParam(tupleSpaceUri, key1, value1, key2, value2);
+    }
+
+    private static <T> String serialize(T object) {
+        return Presentation.serializerOf((Class<T>) object.getClass()).serialize(object);
+    }
+
+    private static <T> Function<String, T> deserializeOne(Class<T> klass) {
+        return Presentation.deserializerOf(klass)::deserialize;
+    }
+
+    private static <T> Function<String, List<T>> deserializeMany(Class<T> klass) {
+        return Presentation.deserializerOf(klass)::deserializeMany;
+    }
+
+    private CompletableFuture<HttpResponse<String>> sendRequestToClient(HttpRequest request) {
+        return client.sendAsync(request, BODY_TO_STRING);
+    }
+
+    private static HttpRequest.BodyPublisher body(Object object) {
+        return HttpRequest.BodyPublishers.ofString(serialize(object), StandardCharsets.UTF_8);
+    }
+
+    private String responseChecker(HttpResponse<String> response) {
+        if (response.statusCode() == 200) {
+            return response.body();
+        } else {
+            throw new RemoteException(
+                    String.format(
+                            "Unexpected response while %s %s: %d",
+                            response.request().method(),
+                            response.uri(),
+                            response.statusCode()
+                    )
+            );
+        }
     }
 
     @Override
     public CompletableFuture<StringTuple> rd(RegexTemplate template) {
         var request = HttpRequest.newBuilder()
-                .uri(tupleSpaceWithQuery("template", serializerOf(RegexTemplate.class).serialize(template)))
+                .uri(tupleSpaceUriWithQuery("template", serialize(template)))
                 .GET()
                 .build();
-        return client.sendAsync(request, BODY_TO_STRING)
-                .thenApply(HttpResponse::body)
-                .thenApply(deserializerOf(StringTuple.class)::deserialize);
+        return sendRequestToClient(request)
+                .thenApply(this::responseChecker)
+                .thenApply(deserializeOne(StringTuple.class));
     }
 
     @Override
     public CompletableFuture<StringTuple> in(RegexTemplate template) {
-        return null;
+        var request = HttpRequest.newBuilder()
+                .uri(tupleSpaceUriWithQuery("template", serialize(template)))
+                .DELETE()
+                .build();
+        return sendRequestToClient(request)
+                .thenApply(this::responseChecker)
+                .thenApply(deserializeOne(StringTuple.class));
     }
 
     @Override
     public CompletableFuture<StringTuple> out(StringTuple tuple) {
-        return null;
+        var request = HttpRequest.newBuilder()
+                .POST(body(tuple))
+                .build();
+        return sendRequestToClient(request)
+                .thenApply(this::responseChecker)
+                .thenApply(deserializeOne(StringTuple.class));
     }
 
     @Override
     public CompletableFuture<MultiSet<? extends StringTuple>> get() {
-        return null;
+        var request = HttpRequest.newBuilder()
+                .uri(tupleSpaceUri)
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenApply(this::responseChecker)
+                .thenApply(deserializeMany(StringTuple.class))
+                .thenApply(HashMultiSet::new);
     }
 
     @Override
     public CompletableFuture<Integer> count() {
-        return null;
+        var request = HttpRequest.newBuilder()
+                .uri(tupleSpaceUriWithQuery("count", true))
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenApply(this::responseChecker)
+                .thenApply(deserializeOne(Number.class))
+                .thenApply(Number::intValue);
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 }

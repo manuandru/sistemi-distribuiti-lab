@@ -22,14 +22,24 @@ public class Presentation {
 
     public static <T> Serializer<T> serializerOf(Class<T> klass) {
         if (!serializers.containsKey(klass)) {
-            throw new IllegalArgumentException("No available serializer for class: " + klass.getName());
+            serializers.keySet().stream()
+                    .filter(key -> key.isAssignableFrom(klass))
+                    .map(serializers::get)
+                    .findAny()
+                    .map(klass::cast)
+                    .orElseThrow(() -> new IllegalArgumentException("No available serializer for class: " + klass.getName()));
         }
         return (Serializer<T>) serializers.get(klass);
     }
 
     public static <T> Deserializer<T> deserializerOf(Class<T> klass) {
         if (!deserializers.containsKey(klass)) {
-            throw new IllegalArgumentException("No available deserializer for class: " + klass.getName());
+            deserializers.keySet().stream()
+                    .filter(key -> key.isAssignableFrom(klass))
+                    .map(deserializers::get)
+                    .findAny()
+                    .map(klass::cast)
+                    .orElseThrow(() -> new IllegalArgumentException("No available deserializer for class: " + klass.getName()));
         }
         return (Deserializer<T>) deserializers.get(klass);
     }

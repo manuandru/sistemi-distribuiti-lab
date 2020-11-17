@@ -8,6 +8,9 @@ import sd.lab.ws.utils.Filters;
 import java.io.IOException;
 
 public class Service {
+
+    public static final int API_VERSION = 2;
+
     public static void main(String[] args) throws IOException {
         var service = startService(8080);
 
@@ -33,6 +36,6 @@ public class Service {
     }
 
     private static String path(String subPath) {
-        return "linda/v1" + subPath;
+        return "linda/v" + API_VERSION + subPath;
     }
 }
