@@ -55,18 +55,21 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         if (count) {
             context.result(
                     api.countTuples(tupleSpaceName)
-                            .thenAcceptAsync(Presentation.serializerOf(Number.class)::serialize)
+                            .thenApply(object ->
+                                    Presentation.serializerOf(Number.class).serialize(object))
             );
         } else if (templateString != null && !templateString.isBlank()) {
             var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
                     api.readTuple(tupleSpaceName, template)
-                            .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
+                            .thenApply(object ->
+                                    Presentation.serializerOf(StringTuple.class).serialize(object))
             );
         } else {
             context.result(
                     api.getAllTuples(tupleSpaceName)
-                            .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serializeMany)
+                            .thenApply(objects ->
+                                    Presentation.serializerOf(StringTuple.class).serializeMany(objects))
             );
         }
     }
@@ -81,7 +84,8 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
             var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
                     api.consumeTuple(tupleSpaceName, template)
-                            .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
+                            .thenApply(object ->
+                                    Presentation.serializerOf(StringTuple.class).serialize(object))
             );
         } else {
             throw new BadRequestResponse("Missing template in path");
@@ -98,7 +102,8 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
             var tuple = Presentation.deserializerOf(StringTuple.class).deserialize(body);
             context.result(
                     api.insertTuple(tupleSpaceName, tuple)
-                            .thenAcceptAsync(Presentation.serializerOf(StringTuple.class)::serialize)
+                            .thenApply(object ->
+                                    Presentation.serializerOf(StringTuple.class).serialize(object))
             );
         } else {
             throw new BadRequestResponse("Missing tuple in body");
@@ -113,8 +118,8 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
     @Override
     public void registerRoutes(Javalin app) {
         app.get(path(), this::getAll);
-        app.get(path(":tupleSpaceName"), this::get);
-        app.post(path(":tupleSpaceName"), this::post);
-        app.delete(path(":tupleSpaceName"), this::delete);
+        app.get(path("/:tupleSpaceName"), this::get);
+        app.post(path("/:tupleSpaceName"), this::post);
+        app.delete(path("/:tupleSpaceName"), this::delete);
     }
 }

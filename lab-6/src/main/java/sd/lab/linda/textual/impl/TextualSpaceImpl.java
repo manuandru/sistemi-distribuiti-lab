@@ -6,7 +6,6 @@ import sd.lab.linda.textual.RegexTemplate;
 import sd.lab.linda.textual.StringTuple;
 import sd.lab.linda.textual.TextualSpace;
 
-import javax.print.DocFlavor;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,7 +63,7 @@ public class TextualSpaceImpl implements TextualSpace {
 
     @Override
     public CompletableFuture<Integer> count() {
-        log("Requested `getSize` operation");
+        log("Requested `count` operation");
         final CompletableFuture<Integer> promise = new CompletableFuture<>();
         executor.execute(() -> this.handleGetSize(promise));
         return promise;

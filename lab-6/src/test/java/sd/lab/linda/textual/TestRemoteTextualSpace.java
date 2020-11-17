@@ -1,19 +1,28 @@
 package sd.lab.linda.textual;
 
+import io.javalin.Javalin;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import sd.lab.ws.Service;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RunWith(Parameterized.class)
-public class TestTextualSpace extends AbstractTestTextualSpace {
+public class TestRemoteTextualSpace extends AbstractTestTextualSpace {
 
-    public TestTextualSpace(Integer i) {
+    private static final int TEST_PORT = 8082;
+    private static Javalin server;
+
+    public TestRemoteTextualSpace(Integer i) {
         super(i);
     }
+
+    private int testCount = 0;
 
     @Parameterized.Parameters
     public static Iterable<Integer> data() {
@@ -22,7 +31,17 @@ public class TestTextualSpace extends AbstractTestTextualSpace {
 
     @Override
     protected TextualSpace newTupleSpace() {
-        return TextualSpace.of("ts" + testIndex, executor);
+        return TextualSpace.remote("localhost", TEST_PORT, "ts-" + testIndex + "-" + testCount++);
+    }
+
+    @BeforeClass
+    public static void setUpSuite() throws Exception {
+        server = Service.startService(TEST_PORT);
+    }
+
+    @AfterClass
+    public static void tearDownSuite() throws Exception {
+        server.stop();
     }
 
     @Before

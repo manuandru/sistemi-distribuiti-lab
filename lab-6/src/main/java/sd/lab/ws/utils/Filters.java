@@ -6,11 +6,10 @@ import java.util.Objects;
 
 
 public class Filters {
-    public static <T> Handler putSingleton(T singleton) {
+    public static <T> Handler putSingletonInContext(Class<T> klass, T singleton) {
         Objects.requireNonNull(singleton);
         return ctx -> {
-            ctx.attribute(singleton.getClass().getName(), singleton);
-            ctx.redirect(ctx.path());
+            ctx.attribute(klass.getName(), singleton);
         };
     }
 }

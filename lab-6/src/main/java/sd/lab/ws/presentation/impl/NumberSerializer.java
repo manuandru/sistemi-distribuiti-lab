@@ -5,7 +5,7 @@ import com.google.gson.JsonPrimitive;
 
 public class NumberSerializer extends AbstractJsonSerializer<Number> {
     @Override
-    protected JsonElement toJson(Number object) {
+    protected JsonElement toJsonElement(Number object) {
         return new JsonPrimitive(object);
     }
 }

@@ -40,7 +40,7 @@ public class RemoteTextualSpace implements TextualSpace {
     private static URI queryParam(URI base, String key, Object value) {
         var prefix = base.getQuery() == null ? "?" : "&";
         var keyValue = prefix + key + "=" + URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
-        return base.resolve(keyValue);
+        return URI.create(base.toString() + keyValue);
     }
 
     private static URI queryParam(URI base, String key1, Object value1, String key2, Object value2) {
@@ -115,6 +115,7 @@ public class RemoteTextualSpace implements TextualSpace {
     @Override
     public CompletableFuture<StringTuple> out(StringTuple tuple) {
         var request = HttpRequest.newBuilder()
+                .uri(tupleSpaceUri)
                 .POST(body(tuple))
                 .build();
         return sendRequestToClient(request)

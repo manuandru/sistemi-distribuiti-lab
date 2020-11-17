@@ -25,10 +25,11 @@ public class Service {
         var textualSpaceStorage = TextualSpaceStorage.getInstance();
 
         var server = Javalin.create(config -> {
+//            config.server(() -> ServerUtils)
             config.enableDevLogging();
         }).start(port);
 
-        server.before(Filters.putSingleton(textualSpaceStorage));
+        server.before(Filters.putSingletonInContext(TextualSpaceStorage.class, textualSpaceStorage));
 
         TextualSpaceController.of(path("/tuple-spaces")).registerRoutes(server);
 

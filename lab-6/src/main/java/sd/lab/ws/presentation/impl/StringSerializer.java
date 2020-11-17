@@ -5,7 +5,7 @@ import com.google.gson.JsonPrimitive;
 
 public class StringSerializer extends AbstractJsonSerializer<String> {
     @Override
-    protected JsonElement toJson(String object) {
+    protected JsonElement toJsonElement(String object) {
         return new JsonPrimitive(object);
     }
 }

@@ -18,6 +18,8 @@ public class Presentation {
         deserializers.put(RegexTemplate.class, new RegexTemplateDeserializer());
         serializers.put(String.class, new StringSerializer());
         deserializers.put(String.class, new StringDeserializer());
+        serializers.put(Number.class, new NumberSerializer());
+        deserializers.put(Number.class, new NumberDeserializer());
     }
 
     public static <T> Serializer<T> serializerOf(Class<T> klass) {

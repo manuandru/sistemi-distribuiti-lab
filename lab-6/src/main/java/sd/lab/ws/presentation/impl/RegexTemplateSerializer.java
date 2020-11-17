@@ -6,7 +6,7 @@ import sd.lab.linda.textual.RegexTemplate;
 
 public class RegexTemplateSerializer extends AbstractJsonSerializer<RegexTemplate> {
     @Override
-    protected JsonElement toJson(RegexTemplate object) {
+    protected JsonElement toJsonElement(RegexTemplate object) {
         var jsonObject = new JsonObject();
         jsonObject.addProperty("template", object.getRegex().pattern());
         return jsonObject;

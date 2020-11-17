@@ -11,11 +11,11 @@ public abstract class AbstractJsonSerializer<T> implements Serializer<T> {
 
     private final Gson gson = new Gson();
 
-    protected abstract JsonElement toJson(T object);
+    protected abstract JsonElement toJsonElement(T object);
 
     @Override
     public String serialize(T object) {
-        return gson.toJson(object);
+        return gson.toJson(toJsonElement(object));
     }
 
     @Override
