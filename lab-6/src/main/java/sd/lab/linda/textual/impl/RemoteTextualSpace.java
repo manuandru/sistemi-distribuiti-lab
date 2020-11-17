@@ -94,6 +94,7 @@ public class RemoteTextualSpace implements TextualSpace {
     public CompletableFuture<StringTuple> rd(RegexTemplate template) {
         var request = HttpRequest.newBuilder()
                 .uri(tupleSpaceUriWithQuery("template", serialize(template)))
+                .header("Accept", "application/json")
                 .GET()
                 .build();
         return sendRequestToClient(request)
@@ -105,6 +106,7 @@ public class RemoteTextualSpace implements TextualSpace {
     public CompletableFuture<StringTuple> in(RegexTemplate template) {
         var request = HttpRequest.newBuilder()
                 .uri(tupleSpaceUriWithQuery("template", serialize(template)))
+                .header("Accept", "application/json")
                 .DELETE()
                 .build();
         return sendRequestToClient(request)
@@ -116,6 +118,8 @@ public class RemoteTextualSpace implements TextualSpace {
     public CompletableFuture<StringTuple> out(StringTuple tuple) {
         var request = HttpRequest.newBuilder()
                 .uri(tupleSpaceUri)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
                 .POST(body(tuple))
                 .build();
         return sendRequestToClient(request)
@@ -127,6 +131,7 @@ public class RemoteTextualSpace implements TextualSpace {
     public CompletableFuture<MultiSet<? extends StringTuple>> get() {
         var request = HttpRequest.newBuilder()
                 .uri(tupleSpaceUri)
+                .header("Accept", "application/json")
                 .GET()
                 .build();
         return sendRequestToClient(request)
@@ -139,6 +144,7 @@ public class RemoteTextualSpace implements TextualSpace {
     public CompletableFuture<Integer> count() {
         var request = HttpRequest.newBuilder()
                 .uri(tupleSpaceUriWithQuery("count", true))
+                .header("Accept", "application/json")
                 .GET()
                 .build();
         return sendRequestToClient(request)

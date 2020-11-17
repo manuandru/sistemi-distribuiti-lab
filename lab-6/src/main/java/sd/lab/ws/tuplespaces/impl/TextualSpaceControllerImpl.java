@@ -9,6 +9,7 @@ import sd.lab.ws.presentation.Presentation;
 import sd.lab.ws.tuplespaces.TextualSpaceApi;
 import sd.lab.ws.tuplespaces.TextualSpaceController;
 import sd.lab.ws.tuplespaces.TextualSpaceStorage;
+import sd.lab.ws.utils.Filters;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -49,7 +50,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         var skip = context.queryParam("skip", Integer.class, "0").check(i -> i >= 0).get();
         var limit = context.queryParam("limit", Integer.class, "10").check(i -> i >= 0).get();
         var filter = context.queryParam("filter", String.class, "").get();
-        context.result(
+        context.contentType("application/json").result(
                 api.getAllNames(skip, limit, filter).thenApply(multipleResultsSerializer(String.class))
         );
     }
@@ -60,6 +61,8 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         var tupleSpaceName = context.pathParam("tupleSpaceName");
         var templateString = context.queryParam("template");
         var count = context.queryParam("count", Boolean.class, "false").get();
+
+        context.contentType("application/json");
 
         if (count) {
             context.result(
@@ -85,7 +88,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
 
         if (templateString != null && !templateString.isBlank()) {
             var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
-            context.result(
+            context.contentType("application/json").result(
                     api.consumeTuple(tupleSpaceName, template).thenApply(singleResultSerializer(StringTuple.class))
             );
         } else {
@@ -101,7 +104,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
 
         if (!body.isBlank()) {
             var tuple = Presentation.deserializerOf(StringTuple.class).deserialize(body);
-            context.result(
+            context.contentType("application/json").result(
                     api.insertTuple(tupleSpaceName, tuple).thenApply(singleResultSerializer(StringTuple.class))
             );
         } else {
@@ -116,6 +119,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
 
     @Override
     public void registerRoutes(Javalin app) {
+        app.before(path("/*"), Filters.ensureClientAcceptMimeType("application", "json"));
         app.get(path(), this::getAll);
         app.get(path("/:tupleSpaceName"), this::get);
         app.post(path("/:tupleSpaceName"), this::post);
