@@ -10,7 +10,9 @@ import sd.lab.ws.tuplespaces.TextualSpaceApi;
 import sd.lab.ws.tuplespaces.TextualSpaceController;
 import sd.lab.ws.tuplespaces.TextualSpaceStorage;
 
+import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class TextualSpaceControllerImpl implements TextualSpaceController {
 
@@ -33,6 +35,14 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         return TextualSpaceApi.of(getStorage(context));
     }
 
+    private <T> Function<T, String> singleResultSerializer(Class<T> klass) {
+        return Presentation.serializerOf(klass)::serialize;
+    }
+
+    private <T> Function<Collection<? extends T>, String> multipleResultsSerializer(Class<T> klass) {
+        return Presentation.serializerOf(klass)::serializeMany;
+    }
+
     @Override
     public void getAll(Context context) throws Exception {
         var api = getApi(context);
@@ -40,8 +50,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         var limit = context.queryParam("limit", Integer.class, "10").check(i -> i >= 0).get();
         var filter = context.queryParam("filter", String.class, "").get();
         context.result(
-                api.getAllNames(skip, limit, filter)
-                        .thenApply(Presentation.serializerOf(String.class)::serializeMany)
+                api.getAllNames(skip, limit, filter).thenApply(multipleResultsSerializer(String.class))
         );
     }
 
@@ -50,26 +59,20 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         var api = getApi(context);
         var tupleSpaceName = context.pathParam("tupleSpaceName");
         var templateString = context.queryParam("template");
-        var count = context.queryParam("count", Boolean.class, "true").get();
+        var count = context.queryParam("count", Boolean.class, "false").get();
 
         if (count) {
             context.result(
-                    api.countTuples(tupleSpaceName)
-                            .thenApply(object ->
-                                    Presentation.serializerOf(Number.class).serialize(object))
+                    api.countTuples(tupleSpaceName).thenApply(singleResultSerializer(Number.class))
             );
         } else if (templateString != null && !templateString.isBlank()) {
             var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
-                    api.readTuple(tupleSpaceName, template)
-                            .thenApply(object ->
-                                    Presentation.serializerOf(StringTuple.class).serialize(object))
+                    api.readTuple(tupleSpaceName, template).thenApply(singleResultSerializer(StringTuple.class))
             );
         } else {
             context.result(
-                    api.getAllTuples(tupleSpaceName)
-                            .thenApply(objects ->
-                                    Presentation.serializerOf(StringTuple.class).serializeMany(objects))
+                    api.getAllTuples(tupleSpaceName).thenApply(multipleResultsSerializer(StringTuple.class))
             );
         }
     }
@@ -83,9 +86,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         if (templateString != null && !templateString.isBlank()) {
             var template = Presentation.deserializerOf(RegexTemplate.class).deserialize(templateString);
             context.result(
-                    api.consumeTuple(tupleSpaceName, template)
-                            .thenApply(object ->
-                                    Presentation.serializerOf(StringTuple.class).serialize(object))
+                    api.consumeTuple(tupleSpaceName, template).thenApply(singleResultSerializer(StringTuple.class))
             );
         } else {
             throw new BadRequestResponse("Missing template in path");
@@ -101,9 +102,7 @@ public class TextualSpaceControllerImpl implements TextualSpaceController {
         if (!body.isBlank()) {
             var tuple = Presentation.deserializerOf(StringTuple.class).deserialize(body);
             context.result(
-                    api.insertTuple(tupleSpaceName, tuple)
-                            .thenApply(object ->
-                                    Presentation.serializerOf(StringTuple.class).serialize(object))
+                    api.insertTuple(tupleSpaceName, tuple).thenApply(singleResultSerializer(StringTuple.class))
             );
         } else {
             throw new BadRequestResponse("Missing tuple in body");

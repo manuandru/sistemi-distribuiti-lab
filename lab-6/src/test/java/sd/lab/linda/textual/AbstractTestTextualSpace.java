@@ -30,13 +30,12 @@ public abstract class AbstractTestTextualSpace {
 
     public void setUp() throws Exception {
         executor = Executors.newSingleThreadExecutor();
-        tupleSpace = newTupleSpace();
         test = new ConcurrentTestHelper();
         rand = new Random();
         environment = Environment.multiThreaded("env-" + testIndex);
     }
 
-    protected abstract TextualSpace newTupleSpace();
+    protected abstract TextualSpace newTupleSpace(String testName);
 
     public void tearDown() throws Exception {
         executor.shutdown();
@@ -44,6 +43,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testInitiallyEmpty() throws Exception {
+        tupleSpace = newTupleSpace("testInitiallyEmpty");
+
         test.setThreadCount(1);
 
         var alice = environment.registerAgent(new ThreadBasedAgentFSM("Alice") {
@@ -69,6 +70,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testReadSuspensiveSemantics() throws Exception {
+        tupleSpace = newTupleSpace("testReadSuspensiveSemantics");
+
         test.setThreadCount(1);
 
         var alice = environment.registerAgent(new ThreadBasedAgentFSM("Alice") {
@@ -94,6 +97,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testTakeSuspensiveSemantics() throws Exception {
+        tupleSpace = newTupleSpace("testTakeSuspensiveSemantics");
+
         test.setThreadCount(1);
 
         var alice = environment.registerAgent(new ThreadBasedAgentFSM("Alice") {
@@ -119,6 +124,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testWriteGenerativeSemantics() throws Exception {
+        tupleSpace = newTupleSpace("testWriteGenerativeSemantics");
+
         test.setThreadCount(1);
 
         var alice = environment.registerAgent(new ThreadBasedAgentFSM("Alice") {
@@ -146,6 +153,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testReadIsIdempotent() throws Exception {
+        tupleSpace = newTupleSpace("testReadIsIdempotent");
+
         test.setThreadCount(2);
 
         final StringTuple tuple = StringTuple.of("foo bar");
@@ -194,6 +203,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testTakeIsNotIdempotent2() throws Exception {
+        tupleSpace = newTupleSpace("testTakeIsNotIdempotent2");
+
         test.setThreadCount(2);
 
         final StringTuple tuple = StringTuple.of("foo bar");
@@ -240,6 +251,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testTakeIsNotIdempotent1() throws Exception {
+        tupleSpace = newTupleSpace("testTakeIsNotIdempotent1");
+
         test.setThreadCount(2);
 
         final StringTuple tuple = StringTuple.of("foo bar");
@@ -285,6 +298,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testAssociativeAccess() throws Exception {
+        tupleSpace = newTupleSpace("testAssociativeAccess");
+
         test.setThreadCount(3);
 
         final StringTuple tuple4Bob = StringTuple.of("recipient: bob");
@@ -354,6 +369,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testGetSize() throws Exception {
+        tupleSpace = newTupleSpace("testGetSize");
+
         test.setThreadCount(1);
 
         var alice = environment.registerAgent(new ThreadBasedAgentFSM("Alice") {
@@ -389,6 +406,8 @@ public abstract class AbstractTestTextualSpace {
 
     @Test
     public void testGetAll() throws Exception {
+        tupleSpace = newTupleSpace("testGetAll");
+
         test.setThreadCount(1);
 
         final MultiSet<StringTuple> expected = new HashMultiSet<>(Arrays.asList(

@@ -21,8 +21,8 @@ public class TestTextualSpace extends AbstractTestTextualSpace {
     }
 
     @Override
-    protected TextualSpace newTupleSpace() {
-        return TextualSpace.of("ts" + testIndex, executor);
+    protected TextualSpace newTupleSpace(String testName) {
+        return TextualSpace.of("ts" + testName + "-" + testIndex, executor);
     }
 
     @Before

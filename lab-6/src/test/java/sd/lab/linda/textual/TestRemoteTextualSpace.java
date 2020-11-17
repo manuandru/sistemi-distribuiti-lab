@@ -22,16 +22,14 @@ public class TestRemoteTextualSpace extends AbstractTestTextualSpace {
         super(i);
     }
 
-    private int testCount = 0;
-
     @Parameterized.Parameters
     public static Iterable<Integer> data() {
         return IntStream.range(0, TEST_REPETITIONS).boxed().collect(Collectors.toList());
     }
 
     @Override
-    protected TextualSpace newTupleSpace() {
-        return TextualSpace.remote("localhost", TEST_PORT, "ts-" + testIndex + "-" + testCount++);
+    protected TextualSpace newTupleSpace(String testName) {
+        return TextualSpace.remote("localhost", TEST_PORT, "ts-" + testName + "-" + testIndex);
     }
 
     @BeforeClass

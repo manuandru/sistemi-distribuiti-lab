@@ -22,7 +22,7 @@ public abstract class AbstractJsonSerializer<T> implements Serializer<T> {
     public String serializeMany(Collection<? extends T> objects) {
         var jsonArray = new JsonArray();
         for (var object : objects) {
-            jsonArray.add(serialize(object));
+            jsonArray.add(toJsonElement(object));
         }
         return gson.toJson(jsonArray);
     }
