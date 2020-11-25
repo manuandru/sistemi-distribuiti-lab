@@ -2,7 +2,7 @@ package sd.lab.ws.presentation.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import io.javalin.http.BadRequestResponse;
+import sd.lab.ws.presentation.PresentationException;
 
 public class StringDeserializer extends AbstractJsonDeserializer<String> {
     @Override
@@ -11,6 +11,6 @@ public class StringDeserializer extends AbstractJsonDeserializer<String> {
             var jsonPrimitive = (JsonPrimitive) jsonElement;
             return jsonPrimitive.getAsString();
         }
-        throw new BadRequestResponse("Cannot convert " + jsonElement + " into a " + String.class.getSimpleName());
+        throw new PresentationException("Cannot convert " + jsonElement + " into a " + String.class.getSimpleName());
     }
 }

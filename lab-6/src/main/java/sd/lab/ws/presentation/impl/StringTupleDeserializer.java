@@ -3,8 +3,8 @@ package sd.lab.ws.presentation.impl;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.javalin.http.BadRequestResponse;
 import sd.lab.linda.textual.StringTuple;
+import sd.lab.ws.presentation.PresentationException;
 
 public class StringTupleDeserializer extends AbstractJsonDeserializer<StringTuple> {
     @Override
@@ -18,6 +18,6 @@ public class StringTupleDeserializer extends AbstractJsonDeserializer<StringTupl
                 }
             }
         }
-        throw new BadRequestResponse("Cannot convert " + jsonElement + " into a " + StringTuple.class.getSimpleName());
+        throw new PresentationException("Cannot convert " + jsonElement + " into a " + StringTuple.class.getSimpleName());
     }
 }

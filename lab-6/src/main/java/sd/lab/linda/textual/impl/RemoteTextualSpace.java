@@ -9,6 +9,7 @@ import sd.lab.linda.textual.StringTuple;
 import sd.lab.linda.textual.TextualSpace;
 import sd.lab.ws.Service;
 import sd.lab.ws.presentation.Presentation;
+import sd.lab.ws.presentation.PresentationException;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -59,12 +60,30 @@ public class RemoteTextualSpace implements TextualSpace {
         return Presentation.serializerOf((Class<T>) object.getClass()).serialize(object);
     }
 
-    private static <T> Function<String, T> deserializeOne(Class<T> klass) {
-        return Presentation.deserializerOf(klass)::deserialize;
+    private static <T> Function<String, CompletableFuture<T>> deserializeOne(Class<T> klass) {
+        var deserializer = Presentation.deserializerOf(klass);
+        return toBeDeserialized -> {
+            var promise = new CompletableFuture<T>();
+            try {
+                promise.complete(deserializer.deserialize(toBeDeserialized));
+            } catch (PresentationException e) {
+                promise.completeExceptionally(new RemoteException(e));
+            }
+            return promise;
+        };
     }
 
-    private static <T> Function<String, List<T>> deserializeMany(Class<T> klass) {
-        return Presentation.deserializerOf(klass)::deserializeMany;
+    private static <T> Function<String, CompletableFuture<List<T>>> deserializeMany(Class<T> klass) {
+        var deserializer = Presentation.deserializerOf(klass);
+        return toBeDeserialized -> {
+            var promise = new CompletableFuture<List<T>>();
+            try {
+                promise.complete(deserializer.deserializeMany(toBeDeserialized));
+            } catch (PresentationException e) {
+                promise.completeExceptionally(new RemoteException(e));
+            }
+            return promise;
+        };
     }
 
     private CompletableFuture<HttpResponse<String>> sendRequestToClient(HttpRequest request) {
@@ -99,7 +118,7 @@ public class RemoteTextualSpace implements TextualSpace {
                 .build();
         return sendRequestToClient(request)
                 .thenApply(this::responseChecker)
-                .thenApply(deserializeOne(StringTuple.class));
+                .thenCompose(deserializeOne(StringTuple.class));
     }
 
     @Override
@@ -111,7 +130,7 @@ public class RemoteTextualSpace implements TextualSpace {
                 .build();
         return sendRequestToClient(request)
                 .thenApply(this::responseChecker)
-                .thenApply(deserializeOne(StringTuple.class));
+                .thenCompose(deserializeOne(StringTuple.class));
     }
 
     @Override
@@ -124,7 +143,7 @@ public class RemoteTextualSpace implements TextualSpace {
                 .build();
         return sendRequestToClient(request)
                 .thenApply(this::responseChecker)
-                .thenApply(deserializeOne(StringTuple.class));
+                .thenCompose(deserializeOne(StringTuple.class));
     }
 
     @Override
@@ -136,7 +155,7 @@ public class RemoteTextualSpace implements TextualSpace {
                 .build();
         return sendRequestToClient(request)
                 .thenApply(this::responseChecker)
-                .thenApply(deserializeMany(StringTuple.class))
+                .thenCompose(deserializeMany(StringTuple.class))
                 .thenApply(HashMultiSet::new);
     }
 
@@ -149,7 +168,7 @@ public class RemoteTextualSpace implements TextualSpace {
                 .build();
         return sendRequestToClient(request)
                 .thenApply(this::responseChecker)
-                .thenApply(deserializeOne(Number.class))
+                .thenCompose(deserializeOne(Number.class))
                 .thenApply(Number::intValue);
     }
 

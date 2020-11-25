@@ -13,13 +13,13 @@ public abstract class AbstractJsonDeserializer<T> implements Deserializer<T> {
 
     private final Gson gson = new Gson();
 
-    private JsonElement toJson(String string) {
+    private JsonElement toJsonElement(String string) {
         return gson.fromJson(string, JsonElement.class);
     }
 
     @Override
     public T deserialize(String string) {
-        var jsonElement = toJson(string);
+        var jsonElement = toJsonElement(string);
         return deserializeJson(jsonElement);
     }
 
@@ -27,7 +27,7 @@ public abstract class AbstractJsonDeserializer<T> implements Deserializer<T> {
 
     @Override
     public List<T> deserializeMany(String string) {
-        JsonArray jsonArray = (JsonArray) toJson(string);
+        JsonArray jsonArray = (JsonArray) toJsonElement(string);
         return IntStream.range(0, jsonArray.size())
                 .mapToObj(jsonArray::get)
                 .map(this::deserializeJson)

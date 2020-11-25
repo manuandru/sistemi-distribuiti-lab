@@ -1,5 +1,6 @@
 package sd.lab.ws.utils;
 
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 
@@ -12,6 +13,10 @@ public class Filters {
         return ctx -> {
             ctx.attribute(klass.getName(), singleton);
         };
+    }
+
+    public static <T> T getSingletonFromContext(Class<T> klass, Context context) {
+        return Objects.requireNonNull(context.attribute(klass.getName()));
     }
 
     public static Handler ensureClientAcceptMimeType(String type, String subType) {
