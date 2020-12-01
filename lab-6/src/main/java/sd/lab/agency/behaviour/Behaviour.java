@@ -1,6 +1,7 @@
 package sd.lab.agency.behaviour;
 
 import org.apache.commons.collections4.MultiSet;
+import sd.lab.agency.AID;
 import sd.lab.agency.Agent;
 import sd.lab.agency.behaviour.impl.*;
 import sd.lab.agency.fsm.AgentFSM;
@@ -10,6 +11,7 @@ import sd.lab.utils.Action;
 import sd.lab.utils.Action1;
 
 import java.time.Duration;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -177,6 +179,36 @@ public interface Behaviour {
                 return count(tupleSpace, onTuplesCounted);
             }
         };
+    }
+
+    static Behaviour send(AID receiver, String payload) {
+        return new Send(receiver, payload);
+    }
+
+    static Behaviour receive(String senderRegex, String messagePayload, BiConsumer<AID, String> onMessageReceived) {
+        return new Receive(senderRegex, messagePayload) {
+            @Override
+            public void onMessageReceived(Agent receiver, AID sender, String payload) {
+                onMessageReceived.accept(sender, payload);
+            }
+
+            @Override
+            public Behaviour deepClone() {
+                return receive(senderRegex, messagePayload, onMessageReceived);
+            }
+        };
+    }
+
+    static Behaviour receiveFromAnyone(String messagePayload, BiConsumer<AID, String> onMessageReceived) {
+        return receive(".*?", messagePayload, onMessageReceived);
+    }
+
+    static Behaviour receiveAnyMessageFromAnyone(BiConsumer<AID, String> onMessageReceived) {
+        return receive(".*?", ".*", onMessageReceived);
+    }
+
+    static Behaviour receiveAnyMessage(String senderRegex, BiConsumer<AID, String> onMessageReceived) {
+        return receive(senderRegex, ".*", onMessageReceived);
     }
 
     /// DEFAULT OPERATORS

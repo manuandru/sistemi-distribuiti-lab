@@ -1,22 +1,13 @@
 package sd.lab.test;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.junit.Assert;
 
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.*;
+
 public class ConcurrentTestHelper {
-    
+
     private static final Duration BLOCKING_THRESHOLD = Duration.ofSeconds(3);
     private static final Duration GET_THRESHOLD = Duration.ofSeconds(1);
     private static final Duration MAX_WAIT_THRESHOLD = Duration.ofSeconds(10);
@@ -65,11 +56,13 @@ public class ConcurrentTestHelper {
     }
     
     public void assertTrue(boolean condition) {
-        toDoList.add(() -> Assert.assertTrue(condition));
+        toDoList.add(() ->
+                Assert.assertTrue(condition));
     }
     
     public void assertTrue(boolean condition, String message) {
-        toDoList.add(() -> Assert.assertTrue(message, condition));
+        toDoList.add(() ->
+                Assert.assertTrue(message, condition));
     }
     
     public void assertEquals(Object actual, Object expected, String message) {

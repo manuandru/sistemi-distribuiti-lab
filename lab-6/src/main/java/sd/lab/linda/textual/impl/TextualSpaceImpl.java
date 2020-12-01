@@ -63,7 +63,7 @@ public class TextualSpaceImpl implements TextualSpace {
 
     @Override
     public CompletableFuture<Integer> count() {
-        log("Requested `count` operation");
+        log("Requested `getSize` operation");
         final CompletableFuture<Integer> promise = new CompletableFuture<>();
         executor.execute(() -> this.handleGetSize(promise));
         return promise;
@@ -85,6 +85,7 @@ public class TextualSpaceImpl implements TextualSpace {
     }
 
     private synchronized void handleIn(final RegexTemplate template, final CompletableFuture<StringTuple> promise) {
+        log("Handling `in` operation on template: %s", template);
         final Iterator<StringTuple> i = tuples.iterator();
         while (i.hasNext()) {
             final StringTuple tuple = i.next();

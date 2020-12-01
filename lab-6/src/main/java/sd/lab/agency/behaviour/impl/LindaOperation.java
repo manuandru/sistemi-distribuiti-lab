@@ -1,7 +1,6 @@
 package sd.lab.agency.behaviour.impl;
 
 import sd.lab.agency.Agent;
-import sd.lab.linda.textual.StringTuple;
 import sd.lab.linda.textual.TextualSpace;
 
 import java.util.concurrent.CompletableFuture;
