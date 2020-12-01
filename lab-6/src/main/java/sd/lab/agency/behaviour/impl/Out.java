@@ -18,7 +18,12 @@ public abstract class Out extends LindaOperation<StringTuple> {
     }
 
     @Override
-    public void onResult(Agent agent, StringTuple result) throws Exception {
+    public void onOperationResult(Agent agent, StringTuple result) throws Exception {
         // does nothing by default
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "out";
     }
 }

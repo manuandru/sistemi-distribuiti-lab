@@ -39,7 +39,7 @@ public abstract class Receive extends LindaOperation<StringTuple> {
     }
 
     @Override
-    public void onResult(Agent agent, StringTuple result) throws Exception {
+    public void onOperationResult(Agent agent, StringTuple result) throws Exception {
         agent.log("Received %s", result.getValue());
         var messageRegex = Pattern.compile(messageRegex());
         var match = messageRegex.matcher(result.getValue());
@@ -58,5 +58,10 @@ public abstract class Receive extends LindaOperation<StringTuple> {
     public CompletableFuture<StringTuple> invokeAsync(Agent agent) {
         receiver = agent.getAID();
         return super.invokeAsync(agent);
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "in";
     }
 }

@@ -16,4 +16,9 @@ public abstract class Rd extends LindaOperation<StringTuple> {
     public CompletableFuture<StringTuple> invokeOperation(TextualSpace textualSpace) {
         return textualSpace.rd(getTemplate());
     }
+
+    @Override
+    protected String getOperationName() {
+        return "rd";
+    }
 }

@@ -1,29 +1,34 @@
 package sd.lab.agency.behaviour.impl;
 
-import sd.lab.agency.behaviour.Behaviour;
 import sd.lab.agency.Agent;
+import sd.lab.agency.behaviour.Behaviour;
 
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AwaitPromise<T> implements Behaviour {
 
-    private enum Phase { CREATED, PAUSED, COMPLETED, DONE }
+    private enum Phase {CREATED, PAUSED, COMPLETED, DONE}
 
-    private Phase phase = Phase.CREATED;
-    private CompletableFuture<T> promise;
+    private volatile Phase phase = Phase.CREATED;
+    private volatile CompletableFuture<T> promise;
 
     @Override
-    public void execute(Agent agent) throws Exception {
+    public synchronized void execute(Agent agent) throws Exception {
         if (phase == Phase.CREATED) {
             promise = invokeAsync(agent);
             promise.thenRunAsync(() -> {
-                phase = Phase.COMPLETED;
-                agent.resumeIfPaused();
+                synchronized (this) {
+                    phase = Phase.COMPLETED;
+                    agent.log("Resuming behaviour %s", this);
+                    agent.resumeIfPaused();
+                }
             });
             phase = Phase.PAUSED;
+            agent.log("Suspending behaviour %s", this);
         } else if (phase == Phase.COMPLETED) {
             onResult(agent, promise.get());
             phase = Phase.DONE;
+            agent.log("Resumed behaviour %s", this);
         } else {
             throw new IllegalStateException("This should never happen");
         }
@@ -34,12 +39,12 @@ public abstract class AwaitPromise<T> implements Behaviour {
     public abstract CompletableFuture<T> invokeAsync(Agent agent);
 
     @Override
-    public boolean isPaused() {
+    public synchronized boolean isPaused() {
         return phase == Phase.PAUSED;
     }
 
     @Override
-    public boolean isOver() {
+    public synchronized boolean isOver() {
         return phase == Phase.DONE;
     }
 

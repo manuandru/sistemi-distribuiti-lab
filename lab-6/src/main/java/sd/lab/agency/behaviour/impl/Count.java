@@ -12,4 +12,9 @@ public abstract class Count extends LindaOperation<Integer> {
     public CompletableFuture<Integer> invokeOperation(TextualSpace textualSpace) {
         return textualSpace.count();
     }
+
+    @Override
+    protected String getOperationName() {
+        return "count";
+    }
 }

@@ -36,7 +36,7 @@ public class Send extends LindaOperation<StringTuple> {
     }
 
     @Override
-    public void onResult(Agent agent, StringTuple result) throws Exception {
+    public void onOperationResult(Agent agent, StringTuple result) throws Exception {
         agent.log("Dispatched %s", result.getValue());
     }
 
@@ -49,5 +49,10 @@ public class Send extends LindaOperation<StringTuple> {
     @Override
     public Behaviour deepClone() {
         return new Send(receiver, payload);
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "out";
     }
 }

@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public final class StringTuple implements Tuple {
 
-    public static StringTuple of(String text) {
-        return new StringTuple(text);
+    public static StringTuple of(String string) {
+        return new StringTuple(string);
     }
 
     private final String value;

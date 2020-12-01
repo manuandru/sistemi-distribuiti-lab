@@ -16,4 +16,9 @@ public abstract class In extends LindaOperation<StringTuple> {
     public CompletableFuture<StringTuple> invokeOperation(TextualSpace textualSpace) {
         return textualSpace.in(getTemplate());
     }
+
+    @Override
+    protected String getOperationName() {
+        return "in";
+    }
 }

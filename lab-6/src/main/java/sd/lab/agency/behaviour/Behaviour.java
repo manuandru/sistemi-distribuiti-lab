@@ -100,7 +100,7 @@ public interface Behaviour {
             }
 
             @Override
-            public void onResult(Agent agent, StringTuple result) throws Exception {
+            public void onOperationResult(Agent agent, StringTuple result) throws Exception {
                 onTupleConsumed.accept(result);
             }
 
@@ -128,7 +128,7 @@ public interface Behaviour {
             }
 
             @Override
-            public void onResult(Agent agent, StringTuple result) throws Exception {
+            public void onOperationResult(Agent agent, StringTuple result) throws Exception {
                 onTupleRead.accept(result);
             }
 
@@ -151,7 +151,7 @@ public interface Behaviour {
             }
 
             @Override
-            public void onResult(Agent agent, MultiSet<StringTuple> result) throws Exception {
+            public void onOperationResult(Agent agent, MultiSet<StringTuple> result) throws Exception {
                 onTuplesRead.accept(result);
             }
 
@@ -170,7 +170,7 @@ public interface Behaviour {
             }
 
             @Override
-            public void onResult(Agent agent, Integer result) throws Exception {
+            public void onOperationResult(Agent agent, Integer result) throws Exception {
                 onTuplesCounted.accept(result);
             }
 

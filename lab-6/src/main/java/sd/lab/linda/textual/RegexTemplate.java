@@ -41,13 +41,12 @@ public class RegexTemplate implements Template {
         return Objects.hash(regex);
     }
 
-    public Pattern getRegex() {
-        return regex;
-    }
-
     @Override
     public String toString() {
         return "/" + regex.pattern() + "/";
     }
 
+    public Pattern getRegex() {
+        return regex;
+    }
 }
