@@ -23,10 +23,14 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("it.unibo.ds.lab.sockets.App")
+    mainClass.set("it.unibo.ds.lab.sockets.server.EchoServer")
 }
 
 tasks.test {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+tasks.getByName<JavaExec>("run") {
+    standardInput = System.`in`
 }

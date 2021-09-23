@@ -3,8 +3,39 @@
  */
 package it.unibo.ds.lab.sockets.server;
 
-public class EchoServer {
-    public static void main(String[] args) {
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.LinkedList;
 
+public class EchoServer {
+
+    public static void main(String[] args) {
+        int port = Integer.parseInt(args[0]);
+        try {
+            listen(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void listen(int port) throws IOException {
+        var server = new ServerSocket();
+
+        System.out.printf("Listening on port %d\n", port);
+        server.bind(new InetSocketAddress(port));
+
+        var echoers = new LinkedList<ServerSideEchoerAgent>();
+
+        while (!server.isClosed()) {
+            Socket client = server.accept();
+            System.out.printf("Accepted connection from: %s", client.getRemoteSocketAddress());
+            var echoer = new ServerSideEchoerAgent(client);
+            echoers.add(echoer);
+            echoer.start();
+        }
     }
 }

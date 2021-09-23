@@ -3,12 +3,35 @@
  */
 package it.unibo.ds.lab.sockets.client;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 public class EchoClient {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new EchoClient().getGreeting());
+        var host = args[0];
+        var port = Integer.parseInt(args[1]);
+        try {
+            echo(host, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (InterruptedException e) {
+            return;
+        }
+    }
+
+    public static void echo(String host, int port) throws IOException, InterruptedException {
+        Socket server = new Socket();
+        System.out.printf("Contacting host %s:%d\n", host, port);
+        server.connect(new InetSocketAddress(host, port), 1000);
+        var consoleConsumer = new ConsoleConsumerAgent(server);
+        var echoer = new ClientSideEchoerAgent(server);
+        consoleConsumer.start();
+        echoer.start();
+
+        consoleConsumer.join();
+        echoer.join();
     }
 }
