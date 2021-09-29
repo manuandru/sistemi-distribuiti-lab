@@ -10,9 +10,9 @@ import org.apache.commons.cli.ParseException;
 
 public class Main {
 
-    private final static Option upperCase = Option.builder("u").longOpt("upperCase").desc("Echo is upper case").build();
+    private final static Option upperCase = Option.builder("u").longOpt("uppercase").desc("Echo is upper case").build();
 
-    private final static Option lowerCase = Option.builder("l").longOpt("lowerCase").desc("Echo is lower case").build();
+    private final static Option lowerCase = Option.builder("l").longOpt("lowercase").desc("Echo is lower case").build();
 
     private final static Options options = new Options();
 
@@ -26,8 +26,8 @@ public class Main {
 
         try {
             var opts = parser.parse(options, args);
-            var mode = opts.hasOption("upperCase") ? Mode.UPPERCASE
-                    : opts.hasOption("lowerCase") ? Mode.LOWERCASE 
+            var mode = opts.hasOption("uppercase") ? Mode.UPPERCASE
+                    : opts.hasOption("lowercase") ? Mode.LOWERCASE 
                         : Mode.NORMAL;
             
             var reader = new BufferedReader(new InputStreamReader(System.in));
