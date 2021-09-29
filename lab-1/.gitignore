@@ -2,6 +2,11 @@ bin/
 .settings/
 .metadata/
 
+.idea
+.vscode
+.classpath
+.project
+
 ### Gradle ###
 .gradle
 build/
