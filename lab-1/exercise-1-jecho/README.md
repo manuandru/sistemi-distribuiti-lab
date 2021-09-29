@@ -9,7 +9,7 @@
     + when in normal mode, the standard input of the program is echoed _as is_
     + you can compile the program by running:
         ```bash
-        javac -cp libs/commons-cli-1.4.jar src/**/*.jar
+        javac -cp libs/commons-cli-1.4.jar src/**/*.java
         ```
     + you can run the compiled program by running
         ```bash
