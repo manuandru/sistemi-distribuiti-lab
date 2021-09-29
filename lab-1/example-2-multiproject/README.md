@@ -1,3 +1,5 @@
+## TODO
+
 1. Inspect and understand the project structure and the provided Java sources
     + both main and test code
 
