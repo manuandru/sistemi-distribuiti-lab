@@ -1,6 +1,6 @@
 # do NOT alter this file
 
-image: pikalab/ci:ubuntu-jdk14-git-gradle-graphviz
+image: pikalab/ci:ubuntu-jdk11-git-gradle-graphviz
 
 before_script:
   - chmod +x gradlew
@@ -10,5 +10,6 @@ Test:
   stage: test
   script:
     - set -e
+    - cd exercise-1-jecho
     - sh test-nojar.sh
     - sh test-jecho.sh
