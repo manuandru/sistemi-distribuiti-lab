@@ -4,11 +4,9 @@
 package it.unibo.ds.lab.sockets.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 
 public class EchoServer {
 
@@ -28,13 +26,10 @@ public class EchoServer {
         System.out.printf("Listening on port %d\n", port);
         server.bind(new InetSocketAddress(port));
 
-        var echoers = new LinkedList<ServerSideEchoerAgent>();
-
         while (!server.isClosed()) {
             Socket client = server.accept();
-            System.out.printf("Accepted connection from: %s", client.getRemoteSocketAddress());
+            System.out.printf("Accepted connection from: %s\n", client.getRemoteSocketAddress());
             var echoer = new ServerSideEchoerAgent(client);
-            echoers.add(echoer);
             echoer.start();
         }
     }

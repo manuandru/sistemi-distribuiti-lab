@@ -9,6 +9,7 @@ import java.net.Socket;
 public class ClientSideEchoerAgent extends Thread {
 
     private static final int BUFFER_SIZE = 1024;
+    private final byte[] buffer = new byte[BUFFER_SIZE];
     private final Socket server;
 
     public ClientSideEchoerAgent(Socket server) {
@@ -21,12 +22,13 @@ public class ClientSideEchoerAgent extends Thread {
             var inputStream = new BufferedInputStream(server.getInputStream());
             var outputStream = System.out;
             while (true) {
-                byte[] data = inputStream.readNBytes(BUFFER_SIZE);
-                if (data.length == 0) {
+                int readBytes = inputStream.read(buffer);
+                if (readBytes < 0) {
                     outputStream.close();
                     return;
                 } else {
-                    outputStream.write(data);
+                    outputStream.write(buffer, 0, readBytes);
+                    outputStream.flush();
                 }
             }
         } catch (IOException e) {
