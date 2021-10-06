@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  # cf. https://hub.docker.com/_/mongo
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      ???: ??? # mongo admin username
+      ???: ??? # mongo admin password
+    ports:
+      - ???:??? # mongo default port
+
+  # cf. https://hub.docker.com/_/mongo-express
+  mongo-dashboard:
+    depends_on:
+      - mongo
+    image: mongo-express
+    restart: always
+    ports:
+      - ???:??? # mongo bashboard port
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ??? # same mongo username as above
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ??? # same mongo password as above
+      ME_CONFIG_MONGODB_URL: mongodb://<username>:<passord>@<hostname>:<port>/
