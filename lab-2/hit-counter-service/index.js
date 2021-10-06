@@ -2,8 +2,8 @@ import { env } from 'process'
 import express from 'express'
 import { randomBytes } from 'crypto'
 
-const port = 'HIT_COUNTER_PORT' in env ? port.HIT_COUNTER_PORT : 8080
-const hostname = 'HOSTNAME' in env ? port.HOSTNAME : 'localhost'
+const port = 'HIT_COUNTER_PORT' in env ? env.HIT_COUNTER_PORT : 8080
+const hostname = 'HOSTNAME' in env ? env.HOSTNAME : 'localhost'
 const serverID = randomBytes(8).toString('hex') // 8-char random string
 
 const server = express()
