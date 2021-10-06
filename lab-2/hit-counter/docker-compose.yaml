@@ -8,4 +8,4 @@ services:
     restart: always
     # deploy:
     #   mode: replicated
-    #   replicas: 2
+    #   replicas: 10
