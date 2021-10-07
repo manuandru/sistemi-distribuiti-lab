@@ -2,8 +2,8 @@
 
 0. Inspect and understand the JEcho project (mostly consisting of the `it.unibo.jecho.Main` class)
     + it consists of a command-line program echoing the standard input, using one of three modalities:
-        - __lower case__, activated by passing `l` or `lowercase` as argument to the program
-        - __upper case__, activated by passing `u` or `uppercase` as argument to the program
+        - __lower case__, activated by passing `-l` or `--lowercase` as argument to the program
+        - __upper case__, activated by passing `-u` or `--uppercase` as argument to the program
         - __normal__, activated by passing _no argument_ to the program
     + when in lower (resp. upper) case mode, the standard input of the program is echoed by converting all lines in lower (resp. upper) case
     + when in normal mode, the standard input of the program is echoed _as is_
