@@ -6,7 +6,7 @@ public class MultiReadingExecutorExample {
     public static void main(String... args) throws InterruptedException {
         var readingThread = new MultiReadingExecutor(
                 openResource("file1.txt"),
-                System.in,
+//                System.in,
                 openResource("file2.txt"),
                 openResource("file3.txt")
         );
