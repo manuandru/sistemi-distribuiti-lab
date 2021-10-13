@@ -1,14 +1,14 @@
 package sd.lab.concurrency;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
 public class SplittingComputationsExamples {
@@ -18,7 +18,7 @@ public class SplittingComputationsExamples {
     private Counter x;
     private Counter y;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ex = Executors.newSingleThreadExecutor(); // single thread!
         events = new LinkedList<>();
@@ -48,7 +48,7 @@ public class SplittingComputationsExamples {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown(){
         ex.shutdownNow();
     }

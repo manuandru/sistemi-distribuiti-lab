@@ -1,14 +1,12 @@
 package sd.lab.concurrency;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class AssertUtils {
     public static List<Integer> range(int minInclusive, int length) {
@@ -24,15 +22,15 @@ public class AssertUtils {
     }
 
     public static <T> void assertOneOf(String message, Collection<? extends T> expected, T actual) {
-        Assert.assertTrue(message, expected.contains(actual));
+        assertTrue(expected.contains(actual), message);
     }
 
     public static <T> void assertOneOf(Collection<? extends T> expected, T actual) {
-        Assert.assertTrue(
+        assertTrue(
+                expected.contains(actual),
                 expected.stream()
                         .map(Object::toString)
-                        .collect(Collectors.joining(", ", actual + " is not in { ", " }")),
-                expected.contains(actual)
+                        .collect(Collectors.joining(", ", actual + " is not in { ", " }"))
         );
     }
 

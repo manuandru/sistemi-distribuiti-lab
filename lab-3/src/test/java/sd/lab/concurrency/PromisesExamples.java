@@ -1,28 +1,28 @@
 package sd.lab.concurrency;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
-import java.math.BigInteger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PromisesExamples {
 
     private ExecutorService ex;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ex = Executors.newSingleThreadExecutor(); // single thread!
     }
 
-    @After
+    @AfterEach
     public void tearDown(){
         ex.shutdownNow();
     }
@@ -67,8 +67,7 @@ public class PromisesExamples {
      */
     @Test
     public void completableFutureExample2() throws ExecutionException, InterruptedException {
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5)
-                .thenApply(r -> r * 2);
+        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5).thenApply(r -> r * 2);
 
         assertEquals(Integer.valueOf(10), promisedResult.get());
     }

@@ -1,8 +1,8 @@
 package sd.lab.concurrency.exercise;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sd.lab.concurrency.MathUtils;
 
 import java.math.BigInteger;
@@ -14,17 +14,17 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestAsyncCalculator {
     private ExecutorService ex;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ex = Executors.newSingleThreadExecutor(); // single thread!
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         ex.shutdownNow();
     }
