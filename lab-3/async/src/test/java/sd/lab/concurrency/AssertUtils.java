@@ -2,8 +2,11 @@ package sd.lab.concurrency;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,7 +24,7 @@ public class AssertUtils {
         }
     }
 
-    public static <T> void assertOneOf(String message, Collection<? extends T> expected, T actual) {
+    public static <T> void assertOneOf(Collection<? extends T> expected, T actual, String message) {
         assertTrue(expected.contains(actual), message);
     }
 

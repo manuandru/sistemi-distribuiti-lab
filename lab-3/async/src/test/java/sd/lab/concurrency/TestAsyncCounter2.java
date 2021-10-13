@@ -1,5 +1,6 @@
 package sd.lab.concurrency;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ public class TestAsyncCounter2 {
         ex = Executors.newSingleThreadExecutor(); // single thread!
     }
 
-    @BeforeEach
+    @AfterEach
     public void tearDown(){
         ex.shutdownNow();
     }
