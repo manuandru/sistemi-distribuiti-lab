@@ -15,3 +15,10 @@ tasks.create<JavaExec>("runMultiReadingService") {
     classpath = project.sourceSets.main.get().runtimeClasspath
     mainClass.set("sd.lab.concurrency.MultiReadingServiceExample")
 }
+
+tasks.create<JavaExec>("runMultiReadingExecutor") {
+    group = "application"
+    standardInput = System.`in`
+    classpath = project.sourceSets.main.get().runtimeClasspath
+    mainClass.set("sd.lab.concurrency.exercise.MultiReadingExecutorExample")
+}

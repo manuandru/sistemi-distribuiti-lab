@@ -7,17 +7,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static sd.lab.concurrency.MultiReadingTestUtils.EXPECTED_EVENTS_LIST;
+import static sd.lab.concurrency.MultiReadingTestUtils.TIMEOUT;
 import static sd.lab.concurrency.ResourcesUtils.openResource;
 
 public class TestMultiReadingThread {
-
-    private static final long TIMEOUT = Duration.ofSeconds(2).toMillis();
 
     private static class TestableMultiReadingThread extends MultiReadingThread {
         private final Collection<Pair<Integer, String>> events;
@@ -43,21 +41,6 @@ public class TestMultiReadingThread {
         }
     }
 
-    private static final List<Pair<Integer, String>> expectedEvents = List.of(
-            Pair.with(0, "a"),
-            Pair.with(1, "1"),
-            Pair.with(2, "alpha"),
-            Pair.with(0, "b"),
-            Pair.with(1, "2"),
-            Pair.with(2, "beta"),
-            Pair.with(0, "c"),
-            Pair.with(1, "3"),
-            Pair.with(2, "gamma"),
-            Pair.with(0, null),
-            Pair.with(1, null),
-            Pair.with(2, null)
-    );
-
     @Test
     public void multipleInputsNonBlocking() throws InterruptedException {
         var events = new LinkedList<Pair<Integer, String>>();
@@ -69,7 +52,7 @@ public class TestMultiReadingThread {
         );
         readingThread.start();
         readingThread.join();
-        assertEquals(expectedEvents, events);
+        assertEquals(EXPECTED_EVENTS_LIST, events);
     }
 
     private static InputStream blockingInputStream() throws IOException {
@@ -91,7 +74,7 @@ public class TestMultiReadingThread {
         );
         readingThread.start();
         readingThread.join(TIMEOUT);
-        assertEquals(expectedEvents.subList(0, 3), events);
+        assertEquals(EXPECTED_EVENTS_LIST.subList(0, 3), events);
     }
 
 }

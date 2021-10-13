@@ -1,4 +1,4 @@
-package sd.lab.concurrency;
+package sd.lab.concurrency.exercise;
 
 import org.javatuples.Pair;
 import org.junit.jupiter.api.Test;
@@ -15,12 +15,12 @@ import static sd.lab.concurrency.MultiReadingTestUtils.EXPECTED_EVENTS_SET;
 import static sd.lab.concurrency.MultiReadingTestUtils.TIMEOUT;
 import static sd.lab.concurrency.ResourcesUtils.openResource;
 
-public class TestMultiReadingService {
+public class TestMultiReadingExecutor {
 
-    private static class TestableMultiReadingService extends MultiReadingService {
+    private static class TestableMultiReadingExecutor extends MultiReadingExecutor {
         private final Collection<Pair<Integer, String>> events;
 
-        public TestableMultiReadingService(Collection<Pair<Integer, String>> events, InputStream input1, InputStream... inputs) {
+        public TestableMultiReadingExecutor(Collection<Pair<Integer, String>> events, InputStream input1, InputStream... inputs) {
             super(input1, inputs);
             this.events = events;
         }
@@ -44,7 +44,7 @@ public class TestMultiReadingService {
     @Test
     public void multipleInputsNonBlocking() throws InterruptedException {
         var events = new HashSet<Pair<Integer, String>>();
-        var readingThread = new TestableMultiReadingService(
+        var readingThread = new TestableMultiReadingExecutor(
                 events,
                 openResource("file1.txt"),
                 openResource("file2.txt"),
@@ -65,7 +65,7 @@ public class TestMultiReadingService {
     @Test
     public void multipleInputsBlocking() throws InterruptedException, IOException {
         var events = new HashSet<Pair<Integer, String>>();
-        var readingThread = new TestableMultiReadingService(
+        var readingThread = new TestableMultiReadingExecutor(
                 events,
                 openResource("file1.txt"),
                 openResource("file2.txt"),

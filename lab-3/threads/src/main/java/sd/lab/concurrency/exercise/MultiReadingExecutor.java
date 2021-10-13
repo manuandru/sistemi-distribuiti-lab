@@ -1,19 +1,22 @@
-package sd.lab.concurrency;
+package sd.lab.concurrency.exercise;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class MultiReadingService {
+public class MultiReadingExecutor {
     private final List<BufferedReader> inputs;
-    private List<Thread> workers;
+    private ExecutorService executorService;
 
-    public MultiReadingService(InputStream input1, InputStream... inputs) {
+    public MultiReadingExecutor(InputStream input1, InputStream... inputs) {
         this.inputs = Stream.concat(Stream.of(input1), Stream.of(inputs))
                 .map(InputStreamReader::new)
                 .map(BufferedReader::new)
@@ -35,25 +38,19 @@ public class MultiReadingService {
     }
 
     public void start() {
-        if (workers != null) throw new IllegalStateException("Service already started");
-        workers = IntStream.range(0, inputs.size())
-                .mapToObj(i -> new Thread(() -> handleReader(i, inputs.get(i))))
-                .peek(Thread::start)
-                .collect(Collectors.toList());
+        if (executorService != null) throw new IllegalStateException("Executor already started");
+        executorService = Executors.newCachedThreadPool();
+        IntStream.range(0, inputs.size()).forEach(i -> executorService.submit(() -> handleReader(i, inputs.get(i))));
+        executorService.shutdown();
     }
 
     public void join() throws InterruptedException {
-        if (workers == null) throw new IllegalStateException("Service not started yet");
-        for (Thread worker : workers) {
-            worker.join();
-        }
+        join(Long.MAX_VALUE);
     }
 
     public void join(long wait) throws InterruptedException {
-        if (workers == null) throw new IllegalStateException("Service not started yet");
-        for (Thread worker : workers) {
-            worker.join(wait);
-        }
+        if (executorService == null) throw new IllegalStateException("Executor not started yet");
+        executorService.awaitTermination(wait, TimeUnit.MILLISECONDS);
     }
 
     public void onLineRead(int index, String line) {

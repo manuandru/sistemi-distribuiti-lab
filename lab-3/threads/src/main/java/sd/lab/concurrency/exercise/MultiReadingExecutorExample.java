@@ -1,12 +1,12 @@
-package sd.lab.concurrency;
+package sd.lab.concurrency.exercise;
 
 import static sd.lab.concurrency.ResourcesUtils.openResource;
 
-public class MultiReadingServiceExample {
+public class MultiReadingExecutorExample {
     public static void main(String... args) throws InterruptedException {
-        var readingThread = new MultiReadingService(
+        var readingThread = new MultiReadingExecutor(
                 openResource("file1.txt"),
-//                System.in,
+                System.in,
                 openResource("file2.txt"),
                 openResource("file3.txt")
         );
