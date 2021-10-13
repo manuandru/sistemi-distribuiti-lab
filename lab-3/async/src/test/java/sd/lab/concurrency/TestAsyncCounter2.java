@@ -1,24 +1,26 @@
 package sd.lab.concurrency;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestAsyncCounter2 {
 
     private ExecutorService ex;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ex = Executors.newSingleThreadExecutor(); // single thread!
     }
 
-    @After
+    @AfterEach
     public void tearDown(){
         ex.shutdownNow();
     }

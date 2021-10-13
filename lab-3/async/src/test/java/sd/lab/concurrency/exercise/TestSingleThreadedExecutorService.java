@@ -1,6 +1,8 @@
 package sd.lab.concurrency.exercise;
 
-import org.junit.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sd.lab.concurrency.Counter;
 import sd.lab.concurrency.MathUtils;
 
@@ -13,20 +15,19 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static sd.lab.concurrency.AssertUtils.assertOneOf;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
-@Ignore
 public class TestSingleThreadedExecutorService {
     private ExecutorService ex;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ex = new SingleThreadedExecutorService();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws InterruptedException {
         ex.shutdownNow();
         assertTrue(ex.isShutdown());
@@ -215,8 +216,8 @@ public class TestSingleThreadedExecutorService {
         } catch (ExecutionException e) {
             assertTrue(e.getCause() instanceof IllegalArgumentException);
         }
-        Assert.assertTrue(task4.isDone());
-        Assert.assertNull(task4.get());
+        assertTrue(task4.isDone());
+        assertNull(task4.get());
     }
 
     /**
@@ -260,8 +261,7 @@ public class TestSingleThreadedExecutorService {
      */
     @Test
     public void completableFutureExample2() throws ExecutionException, InterruptedException {
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5)
-                .thenApply(r -> r * 2);
+        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5).thenApply(r -> r * 2);
 
         assertEquals(Integer.valueOf(10), promisedResult.get());
     }

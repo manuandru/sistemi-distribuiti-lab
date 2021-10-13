@@ -2,18 +2,29 @@ plugins {
     java
 }
 
-repositories {
-    mavenCentral()
-}
-
 group = "sd.lab"
 version = "1.0-SNAPSHOT"
 
-dependencies {
-    testImplementation("junit", "junit", "4.12")
-}
+subprojects {
+    apply<JavaPlugin>()
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_10
-    targetCompatibility = JavaVersion.VERSION_1_10
+    group = rootProject.group
+    version = rootProject.version
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation("org.junit.jupiter", "junit-jupiter", "5.7.2")
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+    }
 }

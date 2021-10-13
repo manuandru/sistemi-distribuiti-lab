@@ -1,6 +1,6 @@
 package sd.lab.concurrency;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static sd.lab.concurrency.AssertUtils.assertOneOf;
 import static sd.lab.concurrency.AssertUtils.suspendCurrentThread;
 
