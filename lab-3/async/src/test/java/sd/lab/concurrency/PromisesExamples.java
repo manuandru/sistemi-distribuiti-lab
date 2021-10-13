@@ -5,11 +5,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,107 +27,62 @@ public class PromisesExamples {
     }
 
     @AfterEach
-    public void tearDown(){
+    public void tearDown() {
         ex.shutdownNow();
     }
 
-    /**
-     * Starts an asynchronous activity aimed at increasing a counter from 0 to <code>max</code>
-     * @param max
-     * @return a {@link CompletableFuture} letting clients know when the activity is over
-     */
-    public CompletableFuture<Integer> incCounterUpTo(int max) {
-        final CompletableFuture<Integer> result = new CompletableFuture<>();
-        ex.execute(() -> incCounterUpToImpl(new Counter(0), max, result));
-        return result;
+    // cf. https://regex101.com/r/0bT8Uq/1
+    private static final Pattern VERSION_FIELD = Pattern.compile(
+            "\"tag_name\"\\s*:\\s*\"r(\\d+\\.\\d+\\.\\d+.*?)\""
+    );
+
+
+    // cf. https://github.com/junit-team/junit5/releases
+    @Test
+    public void testLastJUnitVersionRetrieval() throws ExecutionException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder().executor(ex).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("https://api.github.com/repos/junit-team/junit5/releases/latest"))
+                .build();
+        CompletableFuture<String> version = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApplyAsync(response -> response.body())
+                .thenApplyAsync(body -> VERSION_FIELD.matcher(body))
+                .thenApplyAsync(matcher -> matcher.find() ? matcher.group(1) : null);
+
+        assertEquals("5.8.1", version.get());
     }
 
-    private void incCounterUpToImpl(Counter x, int max, CompletableFuture<Integer> result) {
-        x.inc();
+    @Test
+    public void testWrongJUnitVersionRetrieval() throws InterruptedException {
+        HttpClient client = HttpClient.newBuilder().executor(ex).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("https://api.github.com/repos/junit-team/junit5/releases/missing"))
+                .build();
+        CompletableFuture<String> version = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenComposeAsync(response -> {
+                    if (response.statusCode() == 200) {
+                        return CompletableFuture.completedFuture(response.body());
+                    } else {
+                        return CompletableFuture.failedFuture(new IllegalStateException("Status code is " + response.statusCode()));
+                    }
+                })
+                .thenComposeAsync(body -> {
+                    var matcher = VERSION_FIELD.matcher(body);
+                    if (matcher.find()) {
+                        return CompletableFuture.completedFuture(matcher.group(1));
+                    } else {
+                        return CompletableFuture.failedFuture(new IllegalStateException("Unexpected response body: " + body));
+                    }
+                });
 
-        if (x.getValue() < max) {
-            ex.execute(() -> incCounterUpToImpl(x, max, result)); // async recursion
-        } else {
-            result.complete(x.getValue());
+        try {
+            version.get();
+            fail();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause() instanceof IllegalStateException);
+            assertEquals("Status code is 404", e.getCause().getMessage());
         }
-    }
-
-    /**
-     * Example showing how to await for a {@link CompletableFuture}'s result
-     */
-    @Test
-    public void completableFutureExample1() throws ExecutionException, InterruptedException {
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5);
-
-        Integer actualResult = promisedResult.get(); // this is where the result is awaited
-        assertEquals(Integer.valueOf(5), actualResult);
-    }
-
-    /**
-     * Method {@link CompletableFuture#thenApply(Function)} is to {@link CompletableFuture} what
-     * {@link java.util.stream.Stream#map(Function)} is to {@link java.util.stream.Stream}: it returns a novel
-     * {@link CompletableFuture} attained by applying the provided {@link Function} to the source
-     * {@link CompletableFuture}'s result, whenever it becomes available
-     */
-    @Test
-    public void completableFutureExample2() throws ExecutionException, InterruptedException {
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5).thenApply(r -> r * 2);
-
-        assertEquals(Integer.valueOf(10), promisedResult.get());
-    }
-
-    /**
-     * Method {@link CompletableFuture#whenComplete(BiConsumer)} lets clients register a callback aimed at intercepting
-     * the completion of a {@link CompletableFuture}, without creating a new {@link CompletableFuture}
-     */
-    @Test
-    public void completableFutureExample3() throws ExecutionException, InterruptedException {
-        final List<Integer> events = new LinkedList<>();
-
-        final CompletableFuture<Integer> promisedResult = incCounterUpTo(5)
-                .whenComplete((res, err) -> events.add(res))
-                .thenApply(r -> r * 2);
-
-        assertEquals(Integer.valueOf(10), promisedResult.get());
-        assertEquals(List.of(5), events);
-    }
-
-    /**
-     * The static method {@link CompletableFuture#anyOf(CompletableFuture[])} accepts a number of {@link CompletableFuture}s
-     * and returns a novel {@link CompletableFuture} which is completed as soon as one of the aforementioned
-     * {@link CompletableFuture}s complete
-     */
-    @Test
-    public void joinPromisesOR() throws ExecutionException, InterruptedException {
-
-        final CompletableFuture<?> promisedResult = CompletableFuture.anyOf(
-                incCounterUpTo(1_000_000),
-                incCounterUpTo(1_000),
-                incCounterUpTo(10)
-        );
-        assertEquals(Integer.valueOf(10), promisedResult.get());
-
-    }
-
-    /**
-     * The static method {@link CompletableFuture#allOf(CompletableFuture[])} accepts a number of {@link CompletableFuture}s
-     * and returns a novel {@link CompletableFuture} which is completed as soon as ALL the aforementioned
-     * {@link CompletableFuture}s complete
-     */
-    @Test
-    public void joinPromisesAND() throws ExecutionException, InterruptedException {
-
-        final CompletableFuture<Integer> ten, thousand, million;
-
-        final CompletableFuture<Void> promisedResult = CompletableFuture.allOf(
-                million = incCounterUpTo(1_000_000),
-                thousand = incCounterUpTo(1_000),
-                ten = incCounterUpTo(10)
-        );
-
-        assertNull(promisedResult.get());
-        assertTrue(million.isDone());
-        assertTrue(thousand.isDone());
-        assertTrue(ten.isDone());
     }
 }

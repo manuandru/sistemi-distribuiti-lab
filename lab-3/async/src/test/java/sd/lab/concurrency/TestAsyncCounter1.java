@@ -27,7 +27,6 @@ public class TestAsyncCounter1 {
 
     @Test
     public void singleActivity() {
-
         AsyncCounter1 x = new AsyncCounter1(ex);
 
         assertEquals(0, x.getValue());
@@ -40,7 +39,6 @@ public class TestAsyncCounter1 {
 
     @Test
     public void multipleActivities() {
-
         AsyncCounter1 x = new AsyncCounter1(0, ex);
         AsyncCounter1 y = new AsyncCounter1(10, ex);
         AsyncCounter1 z = new AsyncCounter1(20, ex);
