@@ -3,19 +3,26 @@ package sd.lab.concurrency;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.time.Duration;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static sd.lab.concurrency.ResourcesUtils.openResource;
 
-public class ThreadExamples {
+public class TestMultiReadingThread {
+
+    private static final long TIMEOUT = Duration.ofSeconds(2).toMillis();
 
     private static class TestableMultiReadingThread extends MultiReadingThread {
-        private final List<Pair<Integer, String>> events;
+        private final Collection<Pair<Integer, String>> events;
 
-        public TestableMultiReadingThread(List<Pair<Integer, String>> events, InputStream input1, InputStream... inputs) {
+        public TestableMultiReadingThread(Collection<Pair<Integer, String>> events, InputStream input1, InputStream... inputs) {
             super(input1, inputs);
             this.events = events;
         }
@@ -36,6 +43,21 @@ public class ThreadExamples {
         }
     }
 
+    private static final List<Pair<Integer, String>> expectedEvents = List.of(
+            Pair.with(0, "a"),
+            Pair.with(1, "1"),
+            Pair.with(2, "alpha"),
+            Pair.with(0, "b"),
+            Pair.with(1, "2"),
+            Pair.with(2, "beta"),
+            Pair.with(0, "c"),
+            Pair.with(1, "3"),
+            Pair.with(2, "gamma"),
+            Pair.with(0, null),
+            Pair.with(1, null),
+            Pair.with(2, null)
+    );
+
     @Test
     public void multipleInputsNonBlocking() throws InterruptedException {
         var events = new LinkedList<Pair<Integer, String>>();
@@ -47,23 +69,7 @@ public class ThreadExamples {
         );
         readingThread.start();
         readingThread.join();
-        assertEquals(
-                List.of(
-                        Pair.with(0, "a"),
-                        Pair.with(1, "1"),
-                        Pair.with(2, "alpha"),
-                        Pair.with(0, "b"),
-                        Pair.with(1, "2"),
-                        Pair.with(2, "beta"),
-                        Pair.with(0, "c"),
-                        Pair.with(1, "3"),
-                        Pair.with(2, "gamma"),
-                        Pair.with(0, null),
-                        Pair.with(1, null),
-                        Pair.with(2, null)
-                ),
-                events
-        );
+        assertEquals(expectedEvents, events);
     }
 
     private static InputStream blockingInputStream() throws IOException {
@@ -84,15 +90,8 @@ public class ThreadExamples {
                 blockingInputStream()
         );
         readingThread.start();
-        readingThread.join(1000);
-        assertEquals(
-                List.of(
-                        Pair.with(0, "a"),
-                        Pair.with(1, "1"),
-                        Pair.with(2, "alpha")
-                ),
-                events
-        );
+        readingThread.join(TIMEOUT);
+        assertEquals(expectedEvents.subList(0, 3), events);
     }
 
 }
