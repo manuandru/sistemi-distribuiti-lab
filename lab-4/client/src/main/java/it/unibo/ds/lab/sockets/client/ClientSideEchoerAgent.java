@@ -19,7 +19,7 @@ public class ClientSideEchoerAgent extends Thread {
     @Override
     public void run() {
         try {
-            var inputStream = new BufferedInputStream(server.getInputStream());
+            var inputStream = server.getInputStream();
             var outputStream = System.out;
             while (true) {
                 int readBytes = inputStream.read(buffer);

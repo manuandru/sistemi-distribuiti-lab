@@ -17,7 +17,7 @@ public class ServerSideEchoerAgent extends Thread {
     @Override
     public void run() {
         try {
-            var inputStream = new BufferedInputStream(client.getInputStream());
+            var inputStream = client.getInputStream();
             var outputStream = client.getOutputStream();
             while (true) {
                 int readBytes = inputStream.read(buffer);
@@ -25,8 +25,8 @@ public class ServerSideEchoerAgent extends Thread {
                     outputStream.close();
                     return;
                 } else {
-                    System.out.printf("Echoed %d bytes\n", readBytes);
-                    outputStream.write(readBytes);
+                    System.out.printf("Echoed %d bytes from %s\n", readBytes, client.getRemoteSocketAddress());
+                    outputStream.write(buffer, 0, readBytes);
                     outputStream.flush();
                 }
             }

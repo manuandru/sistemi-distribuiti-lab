@@ -33,4 +33,7 @@ tasks.test {
 
 tasks.getByName<JavaExec>("run") {
     standardInput = System.`in`
+    if (project.hasProperty("port")) {
+        args(project.property("port"))
+    }
 }

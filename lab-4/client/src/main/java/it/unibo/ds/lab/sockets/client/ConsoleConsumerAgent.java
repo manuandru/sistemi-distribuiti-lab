@@ -19,7 +19,7 @@ public class ConsoleConsumerAgent extends Thread {
     @Override
     public void run() {
         try {
-            var inputStream = new BufferedInputStream(System.in);
+            var inputStream = System.in;
             var outputStream = server.getOutputStream();
             while (true) {
                 int readBytes = inputStream.read(buffer);
