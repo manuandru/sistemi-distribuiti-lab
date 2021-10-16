@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,7 @@ public class TestMultiReadingExecutor {
 
     @Test
     public void multipleInputsNonBlocking() throws InterruptedException {
-        var events = new HashSet<Pair<Integer, String>>();
+        var events = Collections.synchronizedSet(new HashSet<Pair<Integer, String>>());
         var readingThread = new TestableMultiReadingExecutor(
                 events,
                 openResource("file1.txt"),
@@ -64,7 +65,7 @@ public class TestMultiReadingExecutor {
 
     @Test
     public void multipleInputsBlocking() throws InterruptedException, IOException {
-        var events = new HashSet<Pair<Integer, String>>();
+        var events = Collections.synchronizedSet(new HashSet<Pair<Integer, String>>());
         var readingThread = new TestableMultiReadingExecutor(
                 events,
                 openResource("file1.txt"),
