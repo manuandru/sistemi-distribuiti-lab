@@ -10,6 +10,7 @@ public class TerminationWaiterAgent extends Thread {
             while (System.in.read() >= 0) {
                 // does nothing, just consumes one byte
             }
+            System.out.println("Goodbye!");
             System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();

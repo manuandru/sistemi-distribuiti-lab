@@ -35,11 +35,12 @@ public class ServerSideEchoerAgent extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (client.isClosed()) {
-                try {
+            try {
+                if (!client.isClosed()) {
                     client.close();
-                } catch (IOException e) {
                 }
+            } catch (IOException ignored) {
+                // silently ignores
             }
         }
     }

@@ -34,6 +34,5 @@ public class EchoClient {
 
         consoleConsumer.join();
         echoer.join();
-        System.out.println("Goodbye!");
     }
 }

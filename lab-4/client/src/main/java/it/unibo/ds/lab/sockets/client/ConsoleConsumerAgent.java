@@ -23,7 +23,7 @@ public class ConsoleConsumerAgent extends Thread {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
                     outputStream.close();
-                    return;
+                    break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
                     outputStream.flush();
@@ -36,12 +36,12 @@ public class ConsoleConsumerAgent extends Thread {
             e.printStackTrace();
             System.exit(1);
         } finally {
-            if (server.isClosed()) {
-                try {
+            try {
+                if (!server.isClosed()) {
                     server.close();
-                } catch (IOException ignored) {
-                    // silently ignores
                 }
+            } catch (IOException ignored) {
+                // silently ignores
             }
         }
     }

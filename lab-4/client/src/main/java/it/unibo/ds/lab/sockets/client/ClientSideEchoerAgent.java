@@ -22,7 +22,6 @@ public class ClientSideEchoerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    outputStream.close();
                     break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
@@ -35,15 +34,15 @@ public class ClientSideEchoerAgent extends Thread {
             e.printStackTrace();
             System.exit(1);
         } finally {
-            if (server.isClosed()) {
-                try {
+            try {
+                if (!server.isClosed()) {
                     server.close();
-                } catch (IOException ignored) {
-                    // silently ignores
                 }
+            } catch (IOException ignored) {
+                // silently ignores
             }
         }
-        System.out.println("Connection closed");
+        System.out.println("Goodbye!");
         System.exit(0);
     }
 }
