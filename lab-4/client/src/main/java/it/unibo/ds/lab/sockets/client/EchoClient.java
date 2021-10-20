@@ -24,8 +24,9 @@ public class EchoClient {
 
     public static void echo(String host, int port) throws IOException, InterruptedException {
         Socket server = new Socket();
-        System.out.printf("Contacting host %s:%d\n", host, port);
+        System.out.printf("Contacting host %s:%d...\n", host, port);
         server.connect(new InetSocketAddress(host, port), 1000);
+        System.out.println("Connection established");
         var consoleConsumer = new ConsoleConsumerAgent(server);
         var echoer = new ClientSideEchoerAgent(server);
         consoleConsumer.start();
@@ -33,5 +34,6 @@ public class EchoClient {
 
         consoleConsumer.join();
         echoer.join();
+        System.out.println("Goodbye!");
     }
 }

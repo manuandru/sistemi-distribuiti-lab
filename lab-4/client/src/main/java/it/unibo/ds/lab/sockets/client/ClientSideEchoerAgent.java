@@ -1,10 +1,8 @@
 package it.unibo.ds.lab.sockets.client;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ClientSideEchoerAgent extends Thread {
 
@@ -25,21 +23,27 @@ public class ClientSideEchoerAgent extends Thread {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
                     outputStream.close();
-                    return;
+                    break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
                     outputStream.flush();
                 }
             }
+        } catch (SocketException e) {
+           // silently ignores
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(1);
         } finally {
             if (server.isClosed()) {
                 try {
                     server.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
+                    // silently ignores
                 }
             }
         }
+        System.out.println("Connection closed");
+        System.exit(0);
     }
 }

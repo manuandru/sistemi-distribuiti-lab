@@ -1,10 +1,8 @@
 package it.unibo.ds.lab.sockets.client;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ConsoleConsumerAgent extends Thread {
 
@@ -24,7 +22,6 @@ public class ConsoleConsumerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    System.out.println("Goodbye!");
                     outputStream.close();
                     return;
                 } else {
@@ -32,13 +29,18 @@ public class ConsoleConsumerAgent extends Thread {
                     outputStream.flush();
                 }
             }
+        } catch (SocketException ignored) {
+            System.err.println("Connection lost");
+            System.exit(1);
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(1);
         } finally {
             if (server.isClosed()) {
                 try {
                     server.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
+                    // silently ignores
                 }
             }
         }

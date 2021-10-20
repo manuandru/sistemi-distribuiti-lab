@@ -1,8 +1,8 @@
 package it.unibo.ds.lab.sockets.server;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ServerSideEchoerAgent extends Thread {
 
@@ -23,13 +23,15 @@ public class ServerSideEchoerAgent extends Thread {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
                     outputStream.close();
-                    return;
+                    break;
                 } else {
                     System.out.printf("Echoed %d bytes from %s\n", readBytes, client.getRemoteSocketAddress());
                     outputStream.write(buffer, 0, readBytes);
                     outputStream.flush();
                 }
             }
+        } catch (SocketException e) {
+            // silently ignores
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
