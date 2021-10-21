@@ -20,10 +20,11 @@ function test_server_alone_succeeds() {
   echo "Listening on port 10000" > $EXPECTED
   echo "Goodbye!" >> $EXPECTED
   server &> $OUTPUT &
+  SERVER=$!
   while [ $(cat $OUTPUT | wc -l) -lt 1 ]; do
     sleep 1
   done
-  kill $!
+  kill $SERVER
   diff -q $EXPECTED $OUTPUT || exit 1
   echo "ok"
 }
