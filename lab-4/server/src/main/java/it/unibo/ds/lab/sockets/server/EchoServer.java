@@ -23,17 +23,14 @@ public class EchoServer {
     public static void listen(int port) throws IOException {
         var server = new ServerSocket();
 
-        server.bind(new InetSocketAddress(port));
+        // reserve the port
         System.out.printf("Bound to port %d\n", port);
 
-        var terminationWaiter = new TerminationWaiterAgent();
-        terminationWaiter.start();
+        // start waiting for the standard input to be closed, then terminate the server
 
         while (!server.isClosed()) {
-            Socket client = server.accept();
-            System.out.printf("Accepted connection from: %s, on local port %d\n", client.getRemoteSocketAddress(), port);
-            var echoer = new ServerSideEchoerAgent(client);
-            echoer.start();
+            // accept incoming connections
+            // serve them
         }
     }
 }
