@@ -1,24 +1,29 @@
 plugins {
     java
-    `java-library`
 }
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    group = "it.unibo.ds.ws"
+    version = "0.1.0"
 }
 
-group = "sd.lab"
-version = "1.0-SNAPSHOT"
+subprojects {
+    apply(plugin = "java")
 
-dependencies {
-    api("org.apache.commons", "commons-collections4", "4.2")
-    implementation("io.javalin", "javalin", "3.11.0")
-    implementation("com.google.code.gson", "gson", "2.8.6")
-    runtimeOnly("org.slf4j", "slf4j-simple", "1.8.+")
-    testImplementation("junit", "junit", "4.12")
-}
+    dependencies {
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    tasks.test {
+        useJUnitPlatform()
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }
