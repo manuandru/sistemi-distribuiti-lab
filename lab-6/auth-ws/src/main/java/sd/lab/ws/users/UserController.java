@@ -3,6 +3,11 @@ package sd.lab.ws.users;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
+import io.javalin.plugin.openapi.annotations.OpenApi;
+import io.javalin.plugin.openapi.annotations.OpenApiContent;
+import io.javalin.plugin.openapi.annotations.OpenApiParam;
+import io.javalin.plugin.openapi.annotations.OpenApiResponse;
+import it.unibo.ds.ws.User;
 import sd.lab.ws.users.impl.UserControllerImpl;
 
 public interface UserController {

@@ -1,6 +1,11 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     java
     `java-library`
+    application
+    kotlin("jvm") version "1.5.31"
 }
 
 repositories {
@@ -19,4 +24,14 @@ dependencies {
 
     implementation("org.apache.commons", "commons-collections4", "4.2")
     implementation("org.slf4j", "slf4j-simple", "1.8.+")
+}
+
+application {
+    mainClass.set("sd.lab.ws.AuthService")
+}
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }

@@ -3,8 +3,10 @@ package sd.lab.ws.tokens.impl;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
+import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import it.unibo.ds.ws.Credentials;
 import sd.lab.ws.AbstractController;
+import sd.lab.ws.token.TokenDocKt;
 import sd.lab.ws.tokens.TokenApi;
 import sd.lab.ws.tokens.TokenController;
 import sd.lab.ws.utils.Filters;
@@ -31,6 +33,6 @@ public class TokenControllerImpl extends AbstractController implements TokenCont
     @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
-        app.post(path("/"), this::postToken);
+        app.post(path("/"), OpenApiBuilder.documented(TokenDocKt.getPostToken(), this::postToken));
     }
 }

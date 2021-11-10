@@ -51,6 +51,6 @@ public class AuthService {
         Info applicationInfo = new Info()
                 .version(API_VERSION)
                 .description("Auth Service");
-        return new OpenApiOptions(applicationInfo).path(path("/index*"));
+        return new OpenApiOptions(applicationInfo).path("/doc");
     }
 }
