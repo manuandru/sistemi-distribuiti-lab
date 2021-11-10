@@ -1,17 +1,12 @@
-image: pikalab/ci:ubuntu-jdk14-git-gradle-graphviz
+image: gradle:7.2-jdk11
 
 variables:
   GOPTS: "--no-daemon --console=plain"
 
-before_script:
-  - chmod +x gradlew
-  - source $HOME/.sdkman/bin/sdkman-init.sh
-
 build:
   stage: build
-  script: ./gradlew assemble $GOPTS
+  script: gradle classes testClasses javadoc $GOPTS
 
 test:
   stage: test
-  script: ./gradlew check $GOPTS
-
+  script: gradle check $GOPTS
