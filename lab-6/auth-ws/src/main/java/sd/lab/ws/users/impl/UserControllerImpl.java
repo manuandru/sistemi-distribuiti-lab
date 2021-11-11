@@ -3,8 +3,10 @@ package sd.lab.ws.users.impl;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
+import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import it.unibo.ds.ws.User;
 import sd.lab.ws.AbstractController;
+import sd.lab.ws.Doc;
 import sd.lab.ws.users.UserApi;
 import sd.lab.ws.users.UserController;
 import sd.lab.ws.utils.Filters;
@@ -65,10 +67,10 @@ public class UserControllerImpl extends AbstractController implements UserContro
     @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
-        app.get(path(), this::getAllUserNames);
-        app.post(path(), this::postNewUser);
-        app.get(path("/{userId}"), this::getUser);
-        app.delete(path("/{userId}"), this::deleteUser);
-        app.put(path("/{userId}"), this::putUser);
+        app.get(path(), OpenApiBuilder.documented(Doc.Users.getAllUserNames, this::getAllUserNames));
+        app.post(path(), OpenApiBuilder.documented(Doc.Users.postNewUser, this::postNewUser));
+        app.get(path("/{userId}"), OpenApiBuilder.documented(Doc.Users.getUser, this::getUser));
+        app.delete(path("/{userId}"), OpenApiBuilder.documented(Doc.Users.deleteUser, this::deleteUser));
+        app.put(path("/{userId}"), OpenApiBuilder.documented(Doc.Users.putUser, this::putUser));
     }
 }

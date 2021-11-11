@@ -49,8 +49,9 @@ public class AuthService {
 
     private static OpenApiOptions getOpenApiOptions() {
         Info applicationInfo = new Info()
+                .title("Auth Service")
                 .version(API_VERSION)
-                .description("Auth Service");
+                .description("A simple WS managing users and their authorization in totally INSECURE way");
         return new OpenApiOptions(applicationInfo).path("/doc");
     }
 }
