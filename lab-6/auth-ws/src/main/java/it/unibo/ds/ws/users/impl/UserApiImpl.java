@@ -20,12 +20,9 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     @Override
     public CompletableFuture<Collection<? extends String>> getAllNames(int skip, int limit, String filter) {
         return CompletableFuture.supplyAsync(
-                () -> storage().getAll().stream()
-                        .skip(skip)
-                        .limit(limit)
-                        .map(User::getUsername)
-                        .filter(it -> it.contains(filter))
-                        .collect(Collectors.toList())
+                () -> {
+                    throw new Error("not implemented");
+                }
         );
     }
 
@@ -33,14 +30,7 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     public CompletableFuture<String> registerUser(User user) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    try {
-                        storage().register(user);
-                        return user.getUsername();
-                    } catch (ConflictException e) {
-                        throw new ConflictResponse(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        throw new BadRequestResponse(e.getMessage());
-                    }
+                    throw new Error("not implemented");
                 }
         );
     }
@@ -49,13 +39,7 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     public CompletableFuture<User> getUser(String userId) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    try {
-                        return storage().get(userId);
-                    } catch (MissingException e) {
-                        throw new NotFoundResponse(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        throw new BadRequestResponse(e.getMessage());
-                    }
+                    throw new Error("not implemented");
                 }
         );
     }
@@ -64,14 +48,7 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     public CompletableFuture<Void> removeUser(String userId) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    try {
-                        storage().remove(userId);
-                        return null;
-                    } catch (MissingException e) {
-                        throw new NotFoundResponse(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        throw new BadRequestResponse(e.getMessage());
-                    }
+                    throw new Error("not implemented");
                 }
         );
     }
@@ -80,16 +57,7 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     public CompletableFuture<String> editUser(String userId, User changes) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    try {
-                        storage().edit(userId, changes);
-                        return changes.getUsername();
-                    } catch (ConflictException e) {
-                        throw new ConflictResponse(e.getMessage());
-                    } catch (MissingException e) {
-                        throw new NotFoundResponse(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        throw new BadRequestResponse(e.getMessage());
-                    }
+                    throw new Error("not implemented");
                 }
         );
     }

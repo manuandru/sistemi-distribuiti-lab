@@ -42,13 +42,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> registerAsync(User user) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/users"))
-                .header("Accept", "application/json")
-                .POST(body(user))
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse());
+        throw new Error("not implemented");
     }
 
     @Override
@@ -56,17 +50,12 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             registerAsync(user).join();
         } catch (CompletionException e) {
-            throw getCauseAs(e, ConflictException.class);
+            throw new Error("not implemented");
         }
     }
 
     private CompletableFuture<?> removeAsync(String userId) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/users/" + userId))
-                .DELETE()
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse());
+        throw new Error("not implemented");
     }
 
     @Override
@@ -74,19 +63,12 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             removeAsync(userId).join();
         } catch (CompletionException e) {
-            throw getCauseAs(e, MissingException.class);
+            throw new Error("not implemented");
         }
     }
 
     private CompletableFuture<User> getAsync(String userId) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/users/" + userId))
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(User.class));
+        throw new Error("not implemented");
     }
 
     @Override
@@ -99,13 +81,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> editAsync(String userId, User changes) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/users/" + userId))
-                .header("Accept", "application/json")
-                .PUT(body(changes))
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse());
+        throw new Error("not implemented");
     }
 
     @Override
@@ -113,42 +89,16 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             editAsync(userId, changes).join();
         } catch (CompletionException e) {
-            if (e.getCause() instanceof MissingException) {
-                throw (MissingException) e.getCause();
-            } else if (e.getCause() instanceof ConflictException) {
-                throw (ConflictException) e.getCause();
-            } else if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
-            } else {
-                throw e;
-            }
+            throw new Error("not implemented");
         }
     }
 
     protected CompletableFuture<List<String>> getAllNamesAsync() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUriWithQuery("/users", "limit", Integer.MAX_VALUE))
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeMany(String.class));
+        throw new Error("not implemented");
     }
 
     @Override
     public Set<? extends User> getAll() {
-        try {
-            List<CompletableFuture<User>> futureUsers = getAllNamesAsync()
-                    .thenApplyAsync(names -> names.stream().map(this::getAsync).collect(Collectors.toList()))
-                    .join();
-            Set<User> users = new HashSet<>();
-            for (CompletableFuture<User> futureUser : futureUsers) {
-                users.add(futureUser.join());
-            }
-            return users;
-        } catch (CompletionException e) {
-            throw getCauseAs(e, RuntimeException.class);
-        }
+        throw new Error("not implemented");
     }
 }

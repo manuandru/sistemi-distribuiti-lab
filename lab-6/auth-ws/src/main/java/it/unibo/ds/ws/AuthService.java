@@ -33,7 +33,8 @@ public class AuthService {
             config.plugins.register(swaggerPlugin());
         });
 
-        server.before(path("/*"), Filters.putSingletonInContext(Authenticator.class, localAuthenticator));
+        // TODO register localAuthenticator into the server via Filters.
+
         UserController.of(path("/users")).registerRoutes(server);
         TokenController.of(path("/tokens")).registerRoutes(server);
     }

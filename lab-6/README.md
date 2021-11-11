@@ -19,12 +19,14 @@ Consider the `auth-*` subprojects, providing a notion of _authenticator_, and it
 ### Exercise 1 _(mandatory)_
 
 1. The remote implementation attempts to highlight the client and server stubs of a WS solution aimed at performing basic user management operations
-    - HTTP is used as the transport protocol behind the scenes 
-    - Service and clients may interoperate via a fixed API, described here: 
-      > https://app.swaggerhub.com/apis/PIKA-lab/Auth/0.1.0
+    - HTTP is used as the transport protocol behind the scenes
+    - Service and clients may interoperate via a fixed API, described here: <http://localhost:10000/doc/ui>
+        + recall to start the service via `./gradlew run` first
 
 2. Look for the many placeholders in these project and fill them, in order to make the provided tests pass
     - Also, take care of understanding the reasons behind the overall structure of the project...
     - ... and how it is mirroring the aforementioned API
+    - You may inspect the currently available routes (for the server) by browsing to: <http://localhost:10000/routes>
 
 > __Goal__: realise a simple WS and the client to use it, while understanding the benefits of a standardadised API
+> + ensure the tests in `TestRemoteAuthenticator` pass
