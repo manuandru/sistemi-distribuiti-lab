@@ -1,8 +1,8 @@
-package sd.lab.ws.users;
+package it.unibo.ds.ws.users;
 
 import it.unibo.ds.ws.Authenticator;
 import it.unibo.ds.ws.User;
-import sd.lab.ws.users.impl.UserApiImpl;
+import it.unibo.ds.ws.users.impl.UserApiImpl;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;

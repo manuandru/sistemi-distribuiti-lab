@@ -3,7 +3,7 @@ package it.unibo.ds.lab.ws;
 import it.unibo.ds.lab.ws.client.RemoteAuthenticator;
 import it.unibo.ds.ws.Authenticator;
 import it.unibo.ds.ws.ConflictException;
-import sd.lab.ws.AuthService;
+import it.unibo.ds.ws.AuthService;
 
 import java.io.IOException;
 

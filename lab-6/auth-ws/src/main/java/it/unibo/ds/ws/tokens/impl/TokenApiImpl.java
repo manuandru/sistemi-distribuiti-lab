@@ -1,13 +1,10 @@
-package sd.lab.ws.tokens.impl;
+package it.unibo.ds.ws.tokens.impl;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
-import it.unibo.ds.ws.Authenticator;
-import it.unibo.ds.ws.Credentials;
-import it.unibo.ds.ws.Token;
-import it.unibo.ds.ws.WrongCredentialsException;
-import sd.lab.ws.AbstractApi;
-import sd.lab.ws.tokens.TokenApi;
+import it.unibo.ds.ws.*;
+import it.unibo.ds.ws.tokens.TokenApi;
+import it.unibo.ds.ws.AbstractApi;
 
 import java.util.concurrent.CompletableFuture;
 

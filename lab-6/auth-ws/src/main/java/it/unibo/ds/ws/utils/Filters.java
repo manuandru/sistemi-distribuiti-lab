@@ -1,4 +1,4 @@
-package sd.lab.ws.utils;
+package it.unibo.ds.ws.utils;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;

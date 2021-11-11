@@ -1,9 +1,9 @@
-package sd.lab.ws.tokens;
+package it.unibo.ds.ws.tokens;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
-import sd.lab.ws.tokens.impl.TokenControllerImpl;
+import it.unibo.ds.ws.tokens.impl.TokenControllerImpl;
 
 public interface TokenController {
 

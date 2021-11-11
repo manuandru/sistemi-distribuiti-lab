@@ -1,14 +1,12 @@
-package sd.lab.ws;
+package it.unibo.ds.ws;
 
 import io.javalin.Javalin;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.swagger.v3.oas.models.info.Info;
-import it.unibo.ds.ws.Authenticator;
-import it.unibo.ds.ws.LocalAuthenticator;
-import sd.lab.ws.tokens.TokenController;
-import sd.lab.ws.users.UserController;
-import sd.lab.ws.utils.Filters;
+import it.unibo.ds.ws.users.UserController;
+import it.unibo.ds.ws.tokens.TokenController;
+import it.unibo.ds.ws.utils.Filters;
 
 public class AuthService {
 

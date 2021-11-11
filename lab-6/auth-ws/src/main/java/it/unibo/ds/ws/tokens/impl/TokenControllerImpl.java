@@ -1,15 +1,15 @@
-package sd.lab.ws.tokens.impl;
+package it.unibo.ds.ws.tokens.impl;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
+import it.unibo.ds.ws.AbstractController;
 import it.unibo.ds.ws.Credentials;
-import sd.lab.ws.AbstractController;
-import sd.lab.ws.Doc;
-import sd.lab.ws.tokens.TokenApi;
-import sd.lab.ws.tokens.TokenController;
-import sd.lab.ws.utils.Filters;
+import it.unibo.ds.ws.Doc;
+import it.unibo.ds.ws.tokens.TokenApi;
+import it.unibo.ds.ws.tokens.TokenController;
+import it.unibo.ds.ws.utils.Filters;
 
 public class TokenControllerImpl extends AbstractController implements TokenController {
     public TokenControllerImpl(String path) {

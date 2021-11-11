@@ -1,14 +1,11 @@
-package sd.lab.ws.users.impl;
+package it.unibo.ds.ws.users.impl;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.NotFoundResponse;
-import it.unibo.ds.ws.Authenticator;
-import it.unibo.ds.ws.ConflictException;
-import it.unibo.ds.ws.MissingException;
-import it.unibo.ds.ws.User;
-import sd.lab.ws.AbstractApi;
-import sd.lab.ws.users.UserApi;
+import it.unibo.ds.ws.*;
+import it.unibo.ds.ws.AbstractApi;
+import it.unibo.ds.ws.users.UserApi;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;

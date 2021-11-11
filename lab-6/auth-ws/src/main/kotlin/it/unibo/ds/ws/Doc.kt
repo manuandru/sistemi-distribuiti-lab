@@ -1,13 +1,10 @@
-package sd.lab.ws
+package it.unibo.ds.ws
 
 import io.javalin.plugin.openapi.annotations.ContentType
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 import io.javalin.plugin.openapi.dsl.document
-import it.unibo.ds.ws.Credentials
-import it.unibo.ds.ws.Token
-import it.unibo.ds.ws.User
-import sd.lab.ws.tokens.TokenApi
-import sd.lab.ws.users.UserApi
+import it.unibo.ds.ws.tokens.TokenApi
+import it.unibo.ds.ws.users.UserApi
 
 object Doc {
     object Tokens {

@@ -27,7 +27,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("sd.lab.ws.AuthService")
+    mainClass.set("it.unibo.ds.ws.AuthService")
 }
 
 tasks.withType<KotlinCompile>().all {

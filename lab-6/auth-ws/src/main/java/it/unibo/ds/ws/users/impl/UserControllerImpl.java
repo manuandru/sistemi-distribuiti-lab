@@ -1,15 +1,15 @@
-package sd.lab.ws.users.impl;
+package it.unibo.ds.ws.users.impl;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
+import it.unibo.ds.ws.AbstractController;
+import it.unibo.ds.ws.Doc;
 import it.unibo.ds.ws.User;
-import sd.lab.ws.AbstractController;
-import sd.lab.ws.Doc;
-import sd.lab.ws.users.UserApi;
-import sd.lab.ws.users.UserController;
-import sd.lab.ws.utils.Filters;
+import it.unibo.ds.ws.users.UserController;
+import it.unibo.ds.ws.users.UserApi;
+import it.unibo.ds.ws.utils.Filters;
 
 public class UserControllerImpl extends AbstractController implements UserController {
 

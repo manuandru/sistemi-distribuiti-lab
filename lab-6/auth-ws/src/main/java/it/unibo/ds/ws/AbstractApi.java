@@ -1,4 +1,4 @@
-package sd.lab.ws;
+package it.unibo.ds.ws;
 
 import it.unibo.ds.ws.Authenticator;
 

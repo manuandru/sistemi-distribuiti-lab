@@ -1,4 +1,4 @@
-package sd.lab.ws;
+package it.unibo.ds.ws;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -6,9 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
-import it.unibo.ds.ws.Authenticator;
-import it.unibo.ds.ws.GsonUtils;
-import sd.lab.ws.utils.Filters;
+import it.unibo.ds.ws.utils.Filters;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,9 +1,9 @@
-package sd.lab.ws.tokens;
+package it.unibo.ds.ws.tokens;
 
 import it.unibo.ds.ws.Authenticator;
 import it.unibo.ds.ws.Credentials;
 import it.unibo.ds.ws.Token;
-import sd.lab.ws.tokens.impl.TokenApiImpl;
+import it.unibo.ds.ws.tokens.impl.TokenApiImpl;
 
 import java.util.concurrent.CompletableFuture;
 
