@@ -1,16 +1,31 @@
 package it.unibo.ds.grpc.greeting;
 
 
+import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 
 public class Service  {
+
+    private static Server service;
+
     public static void main(String[] args) throws IOException, InterruptedException {
-        var server = ServerBuilder.forPort(10000)
+        var port = Integer.parseInt(args.length > 0 ? args[0] : "10000");
+        start(port);
+        service.awaitTermination();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> service.shutdownNow()));
+    }
+
+    public static void start(int port) throws IOException {
+        service = ServerBuilder.forPort(port)
                 .addService(new MyGreetingService())
                 .build();
-        server.start();
-        server.awaitTermination();
+        service.start();
+    }
+
+    public static void stop() throws InterruptedException {
+        service.shutdown();
+        service.awaitTermination();
     }
 }
