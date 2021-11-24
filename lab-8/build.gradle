@@ -1,6 +1,5 @@
 plugins {
-    // Provide convenience executables for trying out the examples.
-    id 'application'
+    id 'java-library'
     // ASSUMES GRADLE 5.6 OR HIGHER. Use plugin version 0.8.10 with earlier gradle versions
     id 'com.google.protobuf' version '0.8.18'
     // Generate IntelliJ IDEA's .idea & .iml project files
@@ -60,9 +59,25 @@ sourceSets {
     }
 }
 
-startScripts.enabled = false
-
 java {
     targetCompatibility = JavaVersion.VERSION_11
     sourceCompatibility = JavaVersion.VERSION_11
+}
+
+def greeting(klass) {
+    return "it.unibo.ds.grpc.greeting.$klass"
+}
+
+task runService(type: JavaExec) {
+    group = "application"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    mainClass.set(greeting("Service"))
+}
+
+task runClient(type: JavaExec) {
+    group = "application"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    mainClass.set(greeting("Client"))
 }

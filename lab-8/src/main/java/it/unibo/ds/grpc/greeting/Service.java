@@ -13,6 +13,7 @@ public class Service  {
     public static void main(String[] args) throws IOException, InterruptedException {
         var port = Integer.parseInt(args.length > 0 ? args[0] : "10000");
         start(port);
+        System.out.println("Listening on port " + port);
         service.awaitTermination();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> service.shutdownNow()));
     }

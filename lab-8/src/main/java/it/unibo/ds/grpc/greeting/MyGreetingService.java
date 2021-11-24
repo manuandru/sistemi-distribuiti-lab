@@ -43,7 +43,7 @@ public class MyGreetingService extends GreeterGrpc.GreeterImplBase {
     @Override
     public StreamObserver<HelloRequest> sayHelloToMany(StreamObserver<HelloReply> responseObserver) {
         return new StreamObserver<>() {
-            String message = "";
+            String message = null;
             int index = 0;
 
             @Override
@@ -51,7 +51,7 @@ public class MyGreetingService extends GreeterGrpc.GreeterImplBase {
                 if (index++ == 0) {
                     message = value.getName();
                 } else {
-                    message = ", " + value.getName();
+                    message += ", " + value.getName();
                 }
             }
 
