@@ -5,7 +5,7 @@ Consider the `hit-counter2` directory
 - except it assumes a MongoDB instance to be in place to keep track of how many requests have been served so far, in total
 - in this way the service can be replicated many times, without affecting the count presented to the user
 - for this reason, the service assumes a number of _environment_ variables to be set, namely:
-    +`MONGO_HOST` is a string identifying host name of the machine hosting MongoDB
+    + `MONGO_HOST` is a string identifying host name of the machine hosting MongoDB
     + `MONGO_PORT` is a number identifying the port MongoDB is listening on
     + `MONGO_USER` is the user identifier the service will exploit to interact with MongoDB 
     + `MONGO_PASSWORD` is the password corresponding to the MongoDB user above
@@ -19,7 +19,7 @@ MongoDB instances can be started up with Docker, via ad-hoc images:
 
 Locally you may try the server by:
 1. Running `npm install` to restore NPM dependencies (this is to be run just __once__)
-2. Starting a MongoDB instance on `localhost:27017`, using `admin` as __both username and passoword__
+2. Starting a MongoDB instance on `localhost:27017`, using `admin` as __both username and password__
 3. Running`npm start` to start the service on `localhost:8080`
 
 Once the service is running, you may query it by either:
