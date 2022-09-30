@@ -32,3 +32,14 @@ tasks.test {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+tasks.getByName<JavaExec>("run") {
+    standardInput = System.`in`
+    val mode = project.findProperty("mode")
+
+    if (mode == "uppercase" || mode == "u") {
+        args("-u")
+    } else if (mode == "lowercase" || mode == "l") {
+        args("-l")
+    }
+}
