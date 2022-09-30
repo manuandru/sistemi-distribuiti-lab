@@ -43,3 +43,17 @@ tasks.getByName<JavaExec>("run") {
         args("-l")
     }
 }
+
+tasks.create<JavaExec>("runUpper") {
+    standardInput = System.`in`
+    mainClass.set("it.unibo.jecho.Main")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args("-u")
+}
+
+tasks.create<JavaExec>("runLower") {
+    standardInput = System.`in`
+    mainClass.set("it.unibo.jecho.Main")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args("-l")
+}
