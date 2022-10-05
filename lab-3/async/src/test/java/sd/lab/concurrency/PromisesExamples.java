@@ -50,7 +50,7 @@ public class PromisesExamples {
                 .thenApplyAsync(body -> VERSION_FIELD.matcher(body))
                 .thenApplyAsync(matcher -> matcher.find() ? matcher.group(1) : null);
 
-        assertEquals("5.8.1", version.get());
+        assertEquals("5.9.1", version.get());
     }
 
     @Test
