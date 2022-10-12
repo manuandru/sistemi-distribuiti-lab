@@ -41,4 +41,5 @@ services:
       HOSTNAME: server
       REPLICA: "{{.Task.Slot}}"
     deploy:
+      mode: replicated
       replicas: 2
