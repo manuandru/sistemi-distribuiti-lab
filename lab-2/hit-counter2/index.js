@@ -12,7 +12,10 @@ const mongoHost = 'MONGO_HOST' in env ? env.MONGO_HOST : "localhost"
 const mongoPort = 'MONGO_PORT' in env ? env.MONGO_PORT : 27017
 const mongoUser = 'MONGO_USER' in env ? env.MONGO_USER : "admin"
 const mongoPassword = 'MONGO_PASSWORD' in env ? env.MONGO_PASSWORD : "admin"
-const replicaNumber = 'REPLICA' in env ? env.REPLICA : 0
+const replicaNumber = 'REPLICA' in env ? 
+                        env.REPLICA != "{{.Task.Slot}}" ? env.REPLICA : 0 
+                        : 0
+         
 
 // MacOS M1 not work with <username>:<password>@
 const mongoConnection = `mongodb://${mongoHost}:${mongoPort}`;
