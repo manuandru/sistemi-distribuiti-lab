@@ -12,7 +12,10 @@ const mongoHost = 'MONGO_HOST' in env ? env.MONGO_HOST : "localhost"
 const mongoPort = 'MONGO_PORT' in env ? env.MONGO_PORT : 27017
 const mongoUser = 'MONGO_USER' in env ? env.MONGO_USER : "admin"
 const mongoPassword = 'MONGO_PASSWORD' in env ? env.MONGO_PASSWORD : "admin"
-const mongoConnection = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}`;
+const replicaNumber = 'REPLICA' in env ? env.REPLICA : 0
+
+// MacOS M1 not work with <username>:<password>@
+const mongoConnection = `mongodb://${mongoHost}:${mongoPort}`;
 const mongClient = new MongoClient(mongoConnection);
 
 const server = express()
@@ -26,7 +29,7 @@ server.get('/', async (req, res) => {
     await hits.insertOne({hitby: serverID})
     let count = await hits.countDocuments()
 
-    res.send(`[${serverID}] Hit ${count} times`)
+    res.send(`[${serverID}] Hit ${count} times - From replica ${replicaNumber}`)
   } catch (e) {
     res.send(e.toString())
   } finally {
