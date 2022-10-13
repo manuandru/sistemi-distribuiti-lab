@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Computes factorial asynchronously
- *
  * TODO implement this interface
  */
 public interface AsyncFactorialCalculator {
@@ -40,6 +39,31 @@ public interface AsyncFactorialCalculator {
      * @return a new instance of {@link AsyncFactorialCalculator}
      */
     static AsyncFactorialCalculator newInstance(ExecutorService executorService) {
-        throw new Error("TODO: implement");
+        return new AsyncFactorialCalculator() {
+            @Override
+            public CompletableFuture<BigInteger> factorial(BigInteger x) {
+                CompletableFuture<BigInteger> result = new CompletableFuture<>();
+                if (x.compareTo(BigInteger.ZERO) < 0) {
+                    result.completeExceptionally(
+                            new IllegalArgumentException("Cannot compute factorial for negative numbers")
+                    );
+                } else {
+                    executorService.submit(() -> factorialWithPromise(x, BigInteger.ONE, result));
+                }
+                return result;
+            }
+
+            public void factorialWithPromise(BigInteger actual, BigInteger result, CompletableFuture<BigInteger> future) {
+                if (actual.compareTo(BigInteger.ZERO) == 0) {
+                    future.complete(result);
+                } else {
+                    executorService.submit(() -> factorialWithPromise(
+                            actual.subtract(BigInteger.ONE),
+                            result.multiply(actual),
+                            future
+                    ));
+                }
+            }
+        };
     }
 }
