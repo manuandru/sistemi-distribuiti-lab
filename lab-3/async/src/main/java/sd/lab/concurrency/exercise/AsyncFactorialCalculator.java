@@ -42,26 +42,27 @@ public interface AsyncFactorialCalculator {
         return new AsyncFactorialCalculator() {
             @Override
             public CompletableFuture<BigInteger> factorial(BigInteger x) {
-                CompletableFuture<BigInteger> result = new CompletableFuture<>();
+                CompletableFuture<BigInteger> futureResult = new CompletableFuture<>();
                 if (x.compareTo(BigInteger.ZERO) < 0) {
-                    result.completeExceptionally(
+                    futureResult.completeExceptionally(
                             new IllegalArgumentException("Cannot compute factorial for negative numbers")
                     );
                 } else {
-                    executorService.submit(() -> factorialWithPromise(x, BigInteger.ONE, result));
+                    executorService.submit(() -> factorialWithPromise(x, BigInteger.ONE, futureResult));
                 }
-                return result;
+                return futureResult;
             }
 
-            public void factorialWithPromise(BigInteger actual, BigInteger result, CompletableFuture<BigInteger> future) {
+            public void factorialWithPromise(BigInteger actual, BigInteger result, CompletableFuture<BigInteger> futureResult) {
                 if (actual.compareTo(BigInteger.ZERO) == 0) {
-                    future.complete(result);
+                    futureResult.complete(result);
                 } else {
                     executorService.submit(() -> factorialWithPromise(
                             actual.subtract(BigInteger.ONE),
                             result.multiply(actual),
-                            future
-                    ));
+                            futureResult
+                        )
+                    );
                 }
             }
         };
