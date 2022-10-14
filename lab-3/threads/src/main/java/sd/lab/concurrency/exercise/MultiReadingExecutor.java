@@ -6,7 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MultiReadingExecutor {
@@ -20,16 +23,37 @@ public class MultiReadingExecutor {
                 .collect(Collectors.toList());
     }
 
+    private void handleReader(int index, BufferedReader reader) {
+        try (reader) {
+            var line = reader.readLine();
+            while (line != null) {
+                onLineRead(index, line);
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            onError(index, e);
+        } finally {
+            onInputClosed(index);
+        }
+    }
+
     public void start() {
-        throw new Error("TODO: implement");
+        if (executorService != null) throw new IllegalStateException("Executor already started");
+        // This approach works only with more than one thread,
+        // otherwise need to change the handleReader behaviour
+        executorService = Executors.newCachedThreadPool();
+        IntStream.range(0, inputs.size())
+                .forEach(i -> executorService.execute(() -> handleReader(i, inputs.get(i))));
+        executorService.shutdown();
     }
 
     public void join() throws InterruptedException {
-        throw new Error("TODO: implement");
+        // I think that after ~2.5 * 10^16 years the world is end :D
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
     }
 
     public void join(long wait) throws InterruptedException {
-        throw new Error("TODO: implement");
+        executorService.awaitTermination(wait, TimeUnit.MILLISECONDS);
     }
 
     public void onLineRead(int index, String line) {
