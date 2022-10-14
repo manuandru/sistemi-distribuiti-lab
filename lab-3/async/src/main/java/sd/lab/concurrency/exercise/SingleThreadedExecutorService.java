@@ -18,11 +18,18 @@ public class SingleThreadedExecutorService implements ExecutorService {
 
     private void backgroundThreadMain() {
         try {
-            throw new Error("TODO: implement");
-        } /*catch (InterruptedException ignored) {
-            // do nothing
-        } */ finally {
-            throw new Error("TODO: implement");
+            while (!tasks.isEmpty() || !shutdown) {
+                var taskToExecute = tasks.take();
+                try {
+                    taskToExecute.run();
+                } catch (Exception ignored) {
+                    // Ignore exception inside tasks
+                }
+            }
+        } catch (InterruptedException ignored) {
+            // do nothing - exit from waiting the queue
+        }  finally {
+            termination.cancel(true);
         }
     }
 
@@ -52,27 +59,39 @@ public class SingleThreadedExecutorService implements ExecutorService {
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        throw new Error("TODO: implement");
+        unit.timedJoin(backgroundThread, timeout);
+        return this.tasks.isEmpty();
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        throw new Error("TODO: implement");
+        if (this.shutdown) {
+            throw new RejectedExecutionException();
+        }
+        CompletableFuture<T> futureToReturn = new CompletableFuture<>();
+        this.tasks.add(() -> {
+            try {
+                futureToReturn.complete(task.call());
+            } catch (Exception e) {
+                futureToReturn.completeExceptionally(e);
+            }
+        });
+        return futureToReturn;
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        throw new Error("TODO: implement");
+        return this.submit(() -> { task.run(); return result; } );
     }
 
     @Override
     public Future<?> submit(Runnable task) {
-        throw new Error("TODO: implement");
+        return this.submit(task, null);
     }
 
     @Override
     public void execute(Runnable command) {
-        throw new Error("TODO: implement");
+        this.submit(command);
     }
 
     // ignore the following methods: they are not tested
