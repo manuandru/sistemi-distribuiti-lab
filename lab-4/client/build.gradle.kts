@@ -11,24 +11,9 @@ plugins {
     application
 }
 
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-}
-
-dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
-}
-
 application {
     // Define the main class for the application.
     mainClass.set("it.unibo.ds.lab.sockets.client.EchoClient")
-}
-
-tasks.test {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
 }
 
 tasks.getByName<JavaExec>("run") {
