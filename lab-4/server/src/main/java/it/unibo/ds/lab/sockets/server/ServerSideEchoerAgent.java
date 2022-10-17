@@ -22,7 +22,7 @@ public class ServerSideEchoerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    outputStream.close();
+                    client.shutdownOutput();
                     break;
                 } else {
                     System.out.printf("Echoed %d bytes from %s\n", readBytes, client.getRemoteSocketAddress());

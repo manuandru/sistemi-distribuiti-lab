@@ -22,7 +22,7 @@ public class ConsoleConsumerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    outputStream.close();
+                    server.shutdownInput();
                     break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
