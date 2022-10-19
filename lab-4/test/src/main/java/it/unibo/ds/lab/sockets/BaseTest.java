@@ -33,7 +33,14 @@ public class BaseTest {
 
     protected static void assertRelativeOrderOfLines(String text, String... expectedLines) {
         var actualLines = List.of(text.split("\n"));
-        var linesIndexes = Stream.of(expectedLines).map(actualLines::indexOf).toList();
+        var linesIndexes = Stream.of(expectedLines).map(line -> {
+            for (int i = 0; i < actualLines.size(); i++) {
+                if (actualLines.get(i).startsWith(line)) {
+                    return i;
+                }
+            }
+            return -1;
+        }).toList();
 
         for (int i = 0; i < linesIndexes.size() - 1; i++) {
             var currentIndex = linesIndexes.get(i + 1);

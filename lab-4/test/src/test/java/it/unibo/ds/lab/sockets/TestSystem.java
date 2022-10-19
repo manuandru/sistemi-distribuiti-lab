@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestSystem extends BaseTest {
 
@@ -20,14 +21,13 @@ public class TestSystem extends BaseTest {
                 assertEquals(0, client.process().exitValue());
                 client.printDebugInfo("client");
                 assertTrue(client.stderrAsText().isBlank());
-                assertMatches(
-                        """
-                        Contacting host localhost:$serverPort...
-                        Connection established
-                        Reached end of input
-                        Received EOF from localhost/127.0.0.1:$serverPort
-                        Goodbye!""".replace("$serverPort", Integer.toString(port)),
-                        client.stdoutAsText()
+                assertRelativeOrderOfLines(
+                        client.stdoutAsText(),
+                        "Contacting host localhost:" + port + "...",
+                        "Connection established",
+                        "Reached end of input",
+                        "Received EOF from localhost/127.0.0.1:" + port,
+                        "Goodbye!"
                 );
             }
             server.stdin().close();
@@ -35,13 +35,12 @@ public class TestSystem extends BaseTest {
             assertEquals(0, server.process().exitValue());
             server.printDebugInfo("server");
             assertTrue(server.stderrAsText().isBlank());
-            assertMatches(
-                    """
-                    Bound to port $serverPort
-                    Accepted connection from: /127.0.0.1:(?<clientPort>\\d+), on local port $serverPort
-                    End of interaction with /127.0.0.1:\\k<clientPort>
-                    Goodbye!""".replace("$serverPort", Integer.toString(port)),
-                    server.stdoutAsText()
+            assertRelativeOrderOfLines(
+                    server.stdoutAsText(),
+                    "Bound to port " + port,
+                    "Accepted connection from: /127.0.0.1:",
+                    "End of interaction with /127.0.0.1:",
+                    "Goodbye!"
             );
         }
     }
@@ -57,16 +56,23 @@ public class TestSystem extends BaseTest {
                 assertEquals(0, client.process().exitValue());
                 client.printDebugInfo("client");
                 assertTrue(client.stderrAsText().isBlank());
-                assertMatches(
-                        """
-                        Contacting host localhost:$serverPort...
-                        Connection established
-                        Sent 6 bytes to localhost/127.0.0.1:$serverPort
-                        (Reached end of input\\n?|Received 6 bytes from localhost/127.0.0.1:$serverPort\\n?){2,2}
-                        hello
-                        Received EOF from localhost/127.0.0.1:$serverPort
-                        Goodbye!""".replace("$serverPort", Integer.toString(port)),
-                        client.stdoutAsText()
+                assertRelativeOrderOfLines(
+                        client.stdoutAsText(),
+                        "Contacting host localhost:" + port + "...",
+                        "Connection established",
+                        "Sent 6 bytes to localhost/127.0.0.1:" + port,
+                        "hello",
+                        "Received EOF from localhost/127.0.0.1:" + port,
+                        "Goodbye!"
+                );
+                assertRelativeOrderOfLines(
+                        client.stdoutAsText(),
+                        "Contacting host localhost:" + port + "...",
+                        "Connection established",
+                        "Sent 6 bytes to localhost/127.0.0.1:" + port,
+                        "Reached end of input",
+                        "Received EOF from localhost/127.0.0.1:" + port,
+                        "Goodbye!"
                 );
             }
             server.stdin().close();
@@ -74,14 +80,13 @@ public class TestSystem extends BaseTest {
             assertEquals(0, server.process().exitValue());
             server.printDebugInfo("server");
             assertTrue(server.stderrAsText().isBlank());
-            assertMatches(
-                    """
-                    Bound to port $serverPort
-                    Accepted connection from: /127.0.0.1:(?<clientPort>\\d+), on local port $serverPort
-                    Echoed 6 bytes from /127.0.0.1:\\k<clientPort>
-                    End of interaction with /127.0.0.1:\\k<clientPort>
-                    Goodbye!""".replace("$serverPort", Integer.toString(port)),
-                    server.stdoutAsText()
+            assertRelativeOrderOfLines(
+                    server.stdoutAsText(),
+                    "Bound to port " + port,
+                    "Accepted connection from: /127.0.0.1:",
+                    "Echoed 6 bytes from /127.0.0.1:",
+                    "End of interaction with /127.0.0.1:",
+                    "Goodbye!"
             );
         }
     }
@@ -104,6 +109,8 @@ public class TestSystem extends BaseTest {
                     assertTrue(client1.stderrAsText().isBlank());
                     assertRelativeOrderOfLines(
                             client1.stdoutAsText(),
+                            "Contacting host localhost:" + port + "...",
+                            "Connection established",
                             "message 2",
                             "message 3",
                             "Goodbye!"
@@ -117,6 +124,8 @@ public class TestSystem extends BaseTest {
                 assertTrue(client2.stderrAsText().isBlank());
                 assertRelativeOrderOfLines(
                         client2.stdoutAsText(),
+                        "Contacting host localhost:" + port + "...",
+                        "Connection established",
                         "message 1",
                         "message 4",
                         "Goodbye!"
