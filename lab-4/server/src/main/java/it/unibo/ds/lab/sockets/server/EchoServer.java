@@ -24,14 +24,14 @@ public class EchoServer {
         var server = new ServerSocket();
 
         server.bind(new InetSocketAddress(port));
+        System.out.printf("Bound to port %d\n", port);
 
         var terminationWaiter = new TerminationWaiterAgent();
         terminationWaiter.start();
 
         while (!server.isClosed()) {
-            System.out.printf("Listening on port %d\n", port);
             Socket client = server.accept();
-            System.out.printf("Accepted connection from: %s\n", client.getRemoteSocketAddress());
+            System.out.printf("Accepted connection from: %s, on local port %d\n", client.getRemoteSocketAddress(), port);
             var echoer = new ServerSideEchoerAgent(client);
             echoer.start();
         }

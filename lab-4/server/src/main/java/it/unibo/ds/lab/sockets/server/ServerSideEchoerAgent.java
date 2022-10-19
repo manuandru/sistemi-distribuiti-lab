@@ -22,7 +22,6 @@ public class ServerSideEchoerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    client.shutdownOutput();
                     break;
                 } else {
                     System.out.printf("Echoed %d bytes from %s\n", readBytes, client.getRemoteSocketAddress());
@@ -30,15 +29,12 @@ public class ServerSideEchoerAgent extends Thread {
                     outputStream.flush();
                 }
             }
-        } catch (SocketException e) {
-            // silently ignores
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                if (!client.isClosed()) {
-                    client.close();
-                }
+                System.out.printf("End of interaction with %s\n", client.getRemoteSocketAddress());
+                client.shutdownOutput();
             } catch (IOException ignored) {
                 // silently ignores
             }

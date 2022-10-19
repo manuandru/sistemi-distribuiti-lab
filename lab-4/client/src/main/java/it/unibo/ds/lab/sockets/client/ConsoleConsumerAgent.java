@@ -22,26 +22,22 @@ public class ConsoleConsumerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
-                    server.shutdownInput();
+                    System.out.println("Reached end of input");
                     break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
+                    System.out.printf("Sent %d bytes to %s\n", readBytes, server.getRemoteSocketAddress());
                     outputStream.flush();
                 }
             }
-        } catch (SocketException ignored) {
-            System.err.println("Connection lost");
-            System.exit(1);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         } finally {
             try {
-                if (!server.isClosed()) {
-                    server.close();
-                }
+                server.shutdownOutput();
             } catch (IOException ignored) {
-                // silently ignores
+                // do nothing
             }
         }
     }

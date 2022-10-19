@@ -22,27 +22,17 @@ public class ClientSideEchoerAgent extends Thread {
             while (true) {
                 int readBytes = inputStream.read(buffer);
                 if (readBytes < 0) {
+                    System.out.printf("Received EOF from %s\n", server.getRemoteSocketAddress());
                     break;
                 } else {
+                    System.out.printf("Received %d bytes from %s\n", readBytes, server.getRemoteSocketAddress());
                     outputStream.write(buffer, 0, readBytes);
                     outputStream.flush();
                 }
             }
-        } catch (SocketException e) {
-           // silently ignores
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
-        } finally {
-            try {
-                if (!server.isClosed()) {
-                    server.close();
-                }
-            } catch (IOException ignored) {
-                // silently ignores
-            }
         }
-        System.out.println("Goodbye!");
-        System.exit(0);
     }
 }

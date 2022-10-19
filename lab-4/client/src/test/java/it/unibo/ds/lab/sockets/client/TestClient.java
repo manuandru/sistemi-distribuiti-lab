@@ -1,5 +1,7 @@
 package it.unibo.ds.lab.sockets.client;
 
+import it.unibo.ds.lab.sockets.BaseTest;
+import it.unibo.ds.lab.sockets.TestableProcess;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,27 +14,18 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestClient {
+public class TestClient extends BaseTest {
     @Test
     public void clientAloneFails() throws IOException, InterruptedException {
-        Process client = startJavaProcess(EchoClient.class, "localhost", 10000);
-        String stderr = client.errorReader().lines().collect(Collectors.joining("\n"));
-        assertTrue(client.waitFor(3, TimeUnit.SECONDS));
-        assertEquals(1, client.exitValue());
-        assertTrue(stderr.contains(ConnectException.class.getName()));
-        assertTrue(stderr.contains(EchoClient.class.getName()));
-    }
-
-    private Process startJavaProcess(Class<?> klass, Object... args) throws IOException {
-        Stream<String> command = Stream.of(
-                new File(System.getProperty("java.home") + "/bin/java").getAbsolutePath(),
-                "-classpath",
-                System.getProperty("java.class.path"),
-                klass.getName()
-        );
-        Stream<String> arguments = Stream.of(args).map(Object::toString);
-        return new ProcessBuilder(
-                Stream.concat(command, arguments).collect(Collectors.toList())
-        ).start();
+        try (TestableProcess client = startJavaProcess(EchoClient.class, "localhost", port)) {
+            assertTrue(client.process().waitFor(3, TimeUnit.SECONDS));
+            assertEquals(1, client.process().exitValue());
+            assertTrue(client.stderrAsText().contains(ConnectException.class.getName()));
+            assertTrue(client.stderrAsText().contains(EchoClient.class.getName()));
+            assertEquals(
+                    "Contacting host localhost:%d...".formatted(port),
+                    client.stdoutAsText()
+            );
+        }
     }
 }

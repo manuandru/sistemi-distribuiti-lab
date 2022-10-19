@@ -10,3 +10,4 @@
 rootProject.name = "lab-sockets"
 include("server")
 include("client")
+include("test")

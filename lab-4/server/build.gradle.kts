@@ -13,3 +13,7 @@ tasks.getByName<JavaExec>("run") {
         args(project.property("port"))
     }
 }
+
+dependencies {
+    testImplementation(project(":test"))
+}
