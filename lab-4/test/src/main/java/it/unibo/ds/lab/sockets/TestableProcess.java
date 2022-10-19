@@ -1,18 +1,19 @@
 package it.unibo.ds.lab.sockets;
 
-import javax.sound.midi.SysexMessage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public record TestableProcess(Process process, File stdout, File stderr) implements AutoCloseable {
 
-    private String readAll(File file) {
+    private <R> R readAll(File file, Collector<? super String, ?, R> f) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().collect(Collectors.joining("\n"));
+            return reader.lines().collect(f);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -23,11 +24,19 @@ public record TestableProcess(Process process, File stdout, File stderr) impleme
     }
 
     public String stdoutAsText() {
-        return readAll(stdout);
+        return readAll(stdout, Collectors.joining("\n"));
     }
 
     public String stderrAsText() {
-        return readAll(stderr);
+        return readAll(stderr, Collectors.joining("\n"));
+    }
+
+    public List<String> stdoutAsLines() {
+        return readAll(stdout, Collectors.toList());
+    }
+
+    public List<String> stderrAsLines() {
+        return readAll(stderr, Collectors.toList());
     }
 
     @Override

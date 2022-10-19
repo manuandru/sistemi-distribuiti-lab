@@ -4,12 +4,11 @@ import org.opentest4j.AssertionFailedError;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BaseTest {
 
@@ -29,6 +28,31 @@ public class BaseTest {
                     expectedRegex,
                     actual
             );
+        }
+    }
+
+    protected static void assertRelativeOrderOfLines(String text, String... expectedLines) {
+        var actualLines = List.of(text.split("\n"));
+        var linesIndexes = Stream.of(expectedLines).map(actualLines::indexOf).toList();
+
+        for (int i = 0; i < linesIndexes.size() - 1; i++) {
+            var currentIndex = linesIndexes.get(i + 1);
+            var previousIndex = linesIndexes.get(i);
+            if (previousIndex < 0) {
+                throw new AssertionFailedError("line <%s> is missing in <%s>".formatted(expectedLines[i], escapeBlank(text)));
+            }
+            if (currentIndex < 0) {
+                throw new AssertionFailedError("line <%s> is missing in <%s>".formatted(expectedLines[i + 1], escapeBlank(text)));
+            }
+            if (currentIndex <= previousIndex) {
+                throw new AssertionFailedError(
+                        "line <%s> is before <%s> in <%s>".formatted(
+                                actualLines.get(currentIndex),
+                                actualLines.get(previousIndex),
+                                escapeBlank(text)
+                        )
+                );
+            }
         }
     }
 
