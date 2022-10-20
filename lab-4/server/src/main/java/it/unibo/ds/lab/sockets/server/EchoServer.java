@@ -24,13 +24,38 @@ public class EchoServer {
         var server = new ServerSocket();
 
         // reserve the port
+        server.bind(new InetSocketAddress(port));
         System.out.printf("Bound to port %d\n", port);
 
-        // start waiting for the standard input to be closed, then terminate the server
+        // TODO: start waiting for the standard input to be closed, then terminate the server
+        ShutdownWaiter waiter = new ShutdownWaiter();
+        waiter.start();
 
         while (!server.isClosed()) {
             // accept incoming connections
+            Socket client = server.accept();
+            System.out.printf("Accepted connection from: %s, on local port %d\n", client.getRemoteSocketAddress(), port);
             // serve them
+            serve(client);
+        }
+    }
+
+    private static final int BUFFER_SIZE = 2048;
+
+    private static void serve(Socket client) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        while (true) {
+            int readBytes = client.getInputStream().read(buffer);
+            if (readBytes < 0) {
+                // nothing to send back to the client, close the output stream
+                client.shutdownOutput();
+                System.out.println("Reached end of input");
+                break;
+            } else {
+                System.out.printf("Sent %d bytes to %s\n", readBytes, client.getRemoteSocketAddress());
+                client.getOutputStream().write(buffer, 0, readBytes);
+                client.getOutputStream().flush();
+            }
         }
     }
 }

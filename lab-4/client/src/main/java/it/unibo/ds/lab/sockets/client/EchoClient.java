@@ -6,6 +6,7 @@ package it.unibo.ds.lab.sockets.client;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 public class EchoClient {
 
@@ -27,6 +28,7 @@ public class EchoClient {
 
         System.out.printf("Contacting host %s:%d...\n", host, port);
         // connect to the host, possibly with timeout
+        server.connect(new InetSocketAddress(host, port), 3000); // exception here if not established
         System.out.println("Connection established");
 
         // TODO:
@@ -39,23 +41,46 @@ public class EchoClient {
 
     private static final int BUFFER_SIZE = 1024;
 
-    private static void echoImpl(Socket server) {
+    private static void echoImpl(Socket server) throws IOException {
         var buffer = new byte[BUFFER_SIZE];
+        // server socket will clos at the end of the
         try (server) {
             propagateStdinToServer(server, buffer);
             propagateServerToStdout(server, buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
         }
     }
 
     private static void propagateStdinToServer(Socket server, byte[] buffer) throws IOException {
         // TODO: read bytes from stdin and redirect them to the socket's output stream
+        while (true) {
+            int readBytes = System.in.read(buffer);
+            if (readBytes < 0) {
+                // close socket output
+                server.shutdownOutput();
+                System.out.println("Reached end of input");
+                break;
+            } else {
+                // User writes something on console
+                server.getOutputStream().write(buffer, 0, readBytes);
+                server.getOutputStream().flush();
+                System.out.printf("Sent %d bytes to %s\n", readBytes, server.getRemoteSocketAddress());
+            }
+        }
     }
 
     private static void propagateServerToStdout(Socket server, byte[] buffer) throws IOException {
         // TODO read bytes from the socket's input stream and redirect them to stdout
+        while (true) {
+            int readBytes = server.getInputStream().read(buffer);
+            if (readBytes < 0) {
+                System.out.printf("Received EOF from %s\n", server.getRemoteSocketAddress());
+                break;
+            } else {
+                System.out.printf("Received %d from %s\n", readBytes, server.getRemoteSocketAddress());
+                System.out.write(buffer, 0, readBytes);
+                System.out.flush();
+            }
+        }
     }
 
 }
