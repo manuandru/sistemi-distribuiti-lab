@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 public class MultiReadingExecutor {
     private final List<BufferedReader> inputs;
     private ExecutorService executorService;
+    private AtomicInteger unfinishedReaders = new AtomicInteger();
 
     public MultiReadingExecutor(InputStream input1, InputStream... inputs) {
         this.inputs = Stream.concat(Stream.of(input1), Stream.of(inputs))
@@ -24,27 +26,29 @@ public class MultiReadingExecutor {
     }
 
     private void handleReader(int index, BufferedReader reader) {
-        try (reader) {
+        try {
             var line = reader.readLine();
-            while (line != null) {
+            if (line != null) {
                 onLineRead(index, line);
-                line = reader.readLine();
+                executorService.execute(() -> handleReader(index, reader));
+            } else {
+                reader.close();
+                onInputClosed(index);
+                if (unfinishedReaders.decrementAndGet() == 0) {
+                    executorService.shutdown();
+                }
             }
         } catch (IOException e) {
             onError(index, e);
-        } finally {
-            onInputClosed(index);
         }
     }
 
     public void start() {
         if (executorService != null) throw new IllegalStateException("Executor already started");
-        // This approach works only with more than one thread,
-        // otherwise need to change the handleReader behaviour
         executorService = Executors.newCachedThreadPool();
+        unfinishedReaders.set(inputs.size());
         IntStream.range(0, inputs.size())
                 .forEach(i -> executorService.execute(() -> handleReader(i, inputs.get(i))));
-        executorService.shutdown();
     }
 
     public void join() throws InterruptedException {
