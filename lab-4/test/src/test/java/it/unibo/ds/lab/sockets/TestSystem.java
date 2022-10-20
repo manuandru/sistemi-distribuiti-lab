@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestSystem extends BaseTest {
 
@@ -97,7 +96,7 @@ public class TestSystem extends BaseTest {
             try (TestableProcess client2 = startJavaProcess(EchoClient.class, "localhost", port)) {
                 client2.stdin().write("message 1\n");
                 while (client2.stdoutAsLines().size() < 2) {
-                    // waste time
+                    // waste time until client2 is connected to the server
                 }
                 try (TestableProcess client1 = startJavaProcess(EchoClient.class, "localhost", port)) {
                     client1.stdin().write("message 2\n");

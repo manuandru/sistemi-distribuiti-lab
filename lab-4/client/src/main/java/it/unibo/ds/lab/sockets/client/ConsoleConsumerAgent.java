@@ -2,7 +2,6 @@ package it.unibo.ds.lab.sockets.client;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class ConsoleConsumerAgent extends Thread {
 
@@ -26,8 +25,8 @@ public class ConsoleConsumerAgent extends Thread {
                     break;
                 } else {
                     outputStream.write(buffer, 0, readBytes);
-                    System.out.printf("Sent %d bytes to %s\n", readBytes, server.getRemoteSocketAddress());
                     outputStream.flush();
+                    System.out.printf("Sent %d bytes to %s\n", readBytes, server.getRemoteSocketAddress());
                 }
             }
         } catch (IOException e) {
