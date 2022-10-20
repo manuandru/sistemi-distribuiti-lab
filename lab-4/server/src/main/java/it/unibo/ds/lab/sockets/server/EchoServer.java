@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Executors;
 
 public class EchoServer {
 
@@ -22,6 +23,7 @@ public class EchoServer {
 
     public static void listen(int port) throws IOException {
         var server = new ServerSocket();
+        var executor = Executors.newCachedThreadPool();
 
         // reserve the port
         server.bind(new InetSocketAddress(port));
@@ -36,7 +38,14 @@ public class EchoServer {
             Socket client = server.accept();
             System.out.printf("Accepted connection from: %s, on local port %d\n", client.getRemoteSocketAddress(), port);
             // serve them
-            serve(client);
+            executor.execute(() -> {
+                try {
+                    serve(client);
+                } catch (IOException e) {
+                    // what shall we do if IOException occurs during client interaction?
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -49,10 +58,10 @@ public class EchoServer {
             if (readBytes < 0) {
                 // nothing to send back to the client, close the output stream
                 client.shutdownOutput();
-                System.out.println("Reached end of input");
+                System.out.printf("End of interaction with %s\n", client.getRemoteSocketAddress());
                 break;
             } else {
-                System.out.printf("Sent %d bytes to %s\n", readBytes, client.getRemoteSocketAddress());
+                System.out.printf("Echoed %d bytes from %s\n", readBytes, client.getRemoteSocketAddress());
                 client.getOutputStream().write(buffer, 0, readBytes);
                 client.getOutputStream().flush();
             }
