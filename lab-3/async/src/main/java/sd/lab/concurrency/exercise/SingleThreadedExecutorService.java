@@ -19,17 +19,13 @@ public class SingleThreadedExecutorService implements ExecutorService {
     private void backgroundThreadMain() {
         try {
             while (!tasks.isEmpty() || !shutdown) {
-                var taskToExecute = tasks.take();
-                try {
-                    taskToExecute.run();
-                } catch (Exception ignored) {
-                    // Ignore exception inside tasks
-                }
+                // cannot throw - exception are caught inside the task
+                tasks.take().run();
             }
         } catch (InterruptedException ignored) {
             // do nothing - exit from waiting the queue
         }  finally {
-            termination.cancel(true);
+            termination.complete(null);
         }
     }
 
@@ -60,7 +56,7 @@ public class SingleThreadedExecutorService implements ExecutorService {
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         unit.timedJoin(backgroundThread, timeout);
-        return this.tasks.isEmpty();
+        return termination.isDone();
     }
 
     @Override
