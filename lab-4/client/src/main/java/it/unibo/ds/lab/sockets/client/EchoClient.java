@@ -18,7 +18,7 @@ public class EchoClient {
             e.printStackTrace();
             System.exit(1);
         } catch (InterruptedException e) {
-            return;
+            // Silently ignores
         }
     }
 
@@ -27,13 +27,56 @@ public class EchoClient {
         System.out.printf("Contacting host %s:%d...\n", host, port);
         server.connect(new InetSocketAddress(host, port), 1000);
         System.out.println("Connection established");
-        var consoleConsumer = new ConsoleConsumerAgent(server);
-        var echoer = new ClientSideEchoerAgent(server);
-        consoleConsumer.start();
-        echoer.start();
 
-        consoleConsumer.join();
-        echoer.join();
+        echoImpl(server);
+
         System.out.println("Goodbye!");
     }
+
+    private static final int BUFFER_SIZE = 1024;
+
+    private static void echoImpl(Socket server) {
+        var buffer = new byte[BUFFER_SIZE];
+        try (server) {
+            propagateStdinToServer(server, buffer);
+            propagateServerToStdout(server, buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private static void propagateStdinToServer(Socket server, byte[] buffer) throws IOException {
+        var inputStream = System.in;
+        var outputStream = server.getOutputStream();
+        while (true) {
+            int readBytes = inputStream.read(buffer);
+            if (readBytes < 0) {
+                server.shutdownOutput();
+                System.out.println("Reached end of input");
+                break;
+            } else {
+                outputStream.write(buffer, 0, readBytes);
+                outputStream.flush();
+                System.out.printf("Sent %d bytes to %s\n", readBytes, server.getRemoteSocketAddress());
+            }
+        }
+    }
+
+    private static void propagateServerToStdout(Socket server, byte[] buffer) throws IOException {
+        var inputStream = server.getInputStream();
+        var outputStream = System.out;
+        while (true) {
+            int readBytes = inputStream.read(buffer);
+            if (readBytes < 0) {
+                System.out.printf("Received EOF from %s\n", server.getRemoteSocketAddress());
+                break;
+            } else {
+                System.out.printf("Received %d bytes from %s\n", readBytes, server.getRemoteSocketAddress());
+                outputStream.write(buffer, 0, readBytes);
+                outputStream.flush();
+            }
+        }
+    }
+
 }
