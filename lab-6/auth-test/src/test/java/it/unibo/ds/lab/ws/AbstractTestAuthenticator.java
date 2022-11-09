@@ -3,7 +3,6 @@ package it.unibo.ds.lab.ws;
 import it.unibo.ds.ws.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -96,7 +95,6 @@ public abstract class AbstractTestAuthenticator {
 
     protected abstract void afterShuttingAuthenticatorDown() throws InterruptedException;
 
-    @Test
     public void testRegisterErrors() {
         assertThrows(ConflictException.class, () -> authenticator.register(andrea));
         assertThrows(ConflictException.class, () -> authenticator.register(giovanni));
@@ -121,7 +119,6 @@ public abstract class AbstractTestAuthenticator {
         return new Token(user.getUsername(), Optional.ofNullable(user.getRole()).orElse(Role.USER));
     }
 
-    @Test
     public void testAuthorize() throws WrongCredentialsException {
         for (var user : List.of(giovanni, andrea, stefano)) {
             for (var credentials : allCredentialsOf(user)) {

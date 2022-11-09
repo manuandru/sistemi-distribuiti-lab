@@ -22,7 +22,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<Token> authorizeAsync(Credentials credentials) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/tokens"))
                 .header("Accept", "application/json")
                 .POST(body(credentials))
@@ -42,7 +42,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> registerAsync(User user) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/users"))
                 .header("Accept", "application/json")
                 .POST(body(user))
@@ -61,7 +61,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> removeAsync(String userId) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/users/" + userId))
                 .DELETE()
                 .build();
@@ -79,7 +79,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<User> getAsync(String userId) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/users/" + userId))
                 .header("Accept", "application/json")
                 .GET()
@@ -99,7 +99,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> editAsync(String userId, User changes) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/users/" + userId))
                 .header("Accept", "application/json")
                 .PUT(body(changes))
@@ -126,7 +126,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     protected CompletableFuture<List<String>> getAllNamesAsync() {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUriWithQuery("/users", "limit", Integer.MAX_VALUE))
                 .header("Accept", "application/json")
                 .GET()
@@ -139,11 +139,11 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     @Override
     public Set<? extends User> getAll() {
         try {
-            var futureUsers = getAllNamesAsync()
+            List<CompletableFuture<User>> futureUsers = getAllNamesAsync()
                     .thenApplyAsync(names -> names.stream().map(this::getAsync).collect(Collectors.toList()))
                     .join();
-            var users = new HashSet<User>();
-            for (var futureUser : futureUsers) {
+            Set<User> users = new HashSet<>();
+            for (CompletableFuture<User> futureUser : futureUsers) {
                 users.add(futureUser.join());
             }
             return users;

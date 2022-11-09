@@ -1,6 +1,7 @@
 package it.unibo.ds.lab.ws.client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import it.unibo.ds.ws.ConflictException;
@@ -34,8 +35,8 @@ public abstract class AbstractHttpClientStub {
     }
 
     protected static URI queryParam(URI base, String key, Object value) {
-        var prefix = base.getQuery() == null ? "?" : "&";
-        var keyValue = prefix + key + "=" + URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
+        String prefix = base.getQuery() == null ? "?" : "&";
+        String keyValue = prefix + key + "=" + URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
         return URI.create(base.toString() + keyValue);
     }
 
@@ -61,7 +62,7 @@ public abstract class AbstractHttpClientStub {
 
     protected <T> Function<String, CompletableFuture<T>> deserializeOne(Class<T> type) {
         return toBeDeserialized -> {
-            var promise = new CompletableFuture<T>();
+            CompletableFuture<T> promise = new CompletableFuture<>();
             try {
                 promise.complete(gson.fromJson(toBeDeserialized, type));
             } catch (JsonParseException e) {
@@ -73,11 +74,11 @@ public abstract class AbstractHttpClientStub {
 
     protected <T> Function<String, CompletableFuture<List<T>>> deserializeMany(Class<T> type) {
         return toBeDeserialized -> {
-            var promise = new CompletableFuture<List<T>>();
+            CompletableFuture<List<T>> promise = new CompletableFuture<>();
             try {
-                var jsonElement = gson.fromJson(toBeDeserialized, JsonElement.class);
+                JsonElement jsonElement = gson.fromJson(toBeDeserialized, JsonElement.class);
                 if (jsonElement.isJsonArray()) {
-                    var jsonArray = jsonElement.getAsJsonArray();
+                    JsonArray jsonArray = jsonElement.getAsJsonArray();
                     List<T> items = new ArrayList<>(jsonArray.size());
                     for (JsonElement item : jsonArray) {
                         items.add(gson.fromJson(item, type));

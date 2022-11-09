@@ -27,7 +27,7 @@ public class Filters {
         Objects.requireNonNull(subType);
         var mimeType = type + "/" + subType;
         return ctx -> {
-            if (methods.stream().map(HttpMethod::name).anyMatch(ctx.method()::equalsIgnoreCase)) {
+            if (methods.stream().map(HttpMethod::name).anyMatch(ctx.method().name()::equalsIgnoreCase)) {
                 var accept = ctx.header("Accept");
                 if (accept == null || accept.isBlank()
                         || (!accept.contains("*/*") && !accept.contains(type + "/*") && !accept.contains(mimeType))) {
