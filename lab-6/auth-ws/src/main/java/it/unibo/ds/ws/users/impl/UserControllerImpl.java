@@ -46,7 +46,6 @@ public class UserControllerImpl extends AbstractController implements UserContro
         String userId = context.pathParam("userId");
         CompletableFuture<Void> futureResult = api.removeUser(userId);
         asyncReplyWithoutBody(context, "application/json", futureResult);
-        ;
     }
 
     @Override

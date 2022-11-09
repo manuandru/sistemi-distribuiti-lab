@@ -1,9 +1,6 @@
 package it.unibo.ds.lab.ws;
 
-import it.unibo.ds.ws.Authenticator;
-import it.unibo.ds.ws.ConflictException;
-import it.unibo.ds.ws.LocalAuthenticator;
-import it.unibo.ds.ws.WrongCredentialsException;
+import it.unibo.ds.ws.*;
 import org.junit.jupiter.api.Test;
 
 public class TestLocalAuthenticator extends AbstractTestAuthenticator {
@@ -37,5 +34,29 @@ public class TestLocalAuthenticator extends AbstractTestAuthenticator {
     @Test
     public void testAuthorize() throws WrongCredentialsException {
         super.testAuthorize();
+    }
+
+    @Override
+    @Test
+    public void testGet() throws MissingException {
+        super.testGet();
+    }
+
+    @Override
+    @Test
+    public void testDelete() throws MissingException, ConflictException {
+        super.testDelete();
+    }
+
+    @Override
+    @Test
+    public void testPut() throws MissingException, ConflictException {
+        super.testPut();
+    }
+
+    @Override
+    @Test
+    public void testGetAll() throws MissingException, ConflictException {
+        super.testGetAll();
     }
 }

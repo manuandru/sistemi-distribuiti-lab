@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ public abstract class AbstractTestAuthenticator {
             "aomicini",
             "123456!",
             LocalDate.of(1965, Month.FEBRUARY, 2),
-            Role.USER,
+            Role.ADMIN,
             "andrea.omicini@unibo.it"
     );
 
@@ -108,11 +109,15 @@ public abstract class AbstractTestAuthenticator {
         return new Credentials(user.getUsername(), user.getPassword());
     }
 
-    private static List<Credentials> allCredentialsOf(User user) {
+    private static List<String> allIdsOf(User user) {
         return Stream.concat(
                 Stream.of(user.getUsername()),
                 user.getEmailAddresses().stream()
-        ).map(it -> new Credentials(it, user.getPassword())).collect(Collectors.toList());
+        ).collect(Collectors.toList());
+    }
+
+    private static List<Credentials> allCredentialsOf(User user) {
+        return allIdsOf(user).stream().map(it -> new Credentials(it, user.getPassword())).collect(Collectors.toList());
     }
 
     private static Token tokenOf(User user) {
@@ -138,4 +143,55 @@ public abstract class AbstractTestAuthenticator {
         assertThrows(WrongCredentialsException.class, () -> authenticator.authorize(credentialsOf(noEmail)));
     }
 
+    public void testGet() throws MissingException {
+        for (var user : List.of(giovanni, andrea, stefano)) {
+            var expected = new User(user);
+            expected.setPassword(null);
+            if (expected.getRole() == null) {
+                expected.setRole(Role.USER);
+            }
+            for (var id : allIdsOf(user)) {
+                var actual = authenticator.get(id);
+                assertEquals(expected, actual);
+            }
+        }
+
+        assertThrows(MissingException.class, () -> authenticator.get("missing"));
+    }
+
+    public void testDelete() throws MissingException, ConflictException {
+        for (var user : List.of(giovanni, andrea, stefano)) {
+            for (var id : allIdsOf(user)) {
+                authenticator.remove(id);
+                authenticator.register(user);
+            }
+        }
+
+        assertThrows(MissingException.class, () -> authenticator.remove("missing"));
+    }
+
+    public void testPut() throws MissingException, ConflictException {
+        var expected = new User(stefano);
+        expected.setRole(Role.USER);
+        expected.setUsername("smariani");
+        expected.getEmailAddresses().add("stefano.mariani@unimore.it");
+
+        authenticator.edit(stefano.getUsername(), expected);
+
+        expected.setPassword(null);
+        assertEquals(expected, authenticator.get("smariani"));
+
+        expected.setUsername(giovanni.getUsername());
+        assertThrows(ConflictException.class, () -> authenticator.edit("stefano.mariani@unimore.it", expected));
+        assertThrows(MissingException.class, () -> authenticator.remove("missing"));
+    }
+
+    public void testGetAll() throws MissingException, ConflictException {
+        for (int i = 0; i < 10; i++) {
+            var user = new User("User " + i, "user" + i, "password" + i, LocalDate.of(2000 + i, 1 + i, 1 + i), null, "user" + i + "@unibo.it");
+            authenticator.register(user);
+        }
+        Set<? extends User> result = authenticator.getAll();
+        assertEquals(13, result.size());
+    }
 }

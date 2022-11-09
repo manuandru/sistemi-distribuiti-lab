@@ -12,45 +12,47 @@ public class LocalAuthenticator implements Authenticator {
 
     @Override
     public synchronized void register(User user) throws ConflictException {
-        if (user.getUsername() == null || user.getUsername().isBlank()) {
-            throw new IllegalArgumentException("Invalid username: " + user.getUsername());
+        var copy = new User(user); // defensive copy
+        if (copy.getUsername() == null || copy.getUsername().isBlank()) {
+            throw new IllegalArgumentException("Invalid username: " + copy.getUsername());
         }
-        if (user.getEmailAddresses().isEmpty()) {
-            throw new IllegalArgumentException("No email provided for user: " + user.getUsername());
+        if (copy.getEmailAddresses().isEmpty()) {
+            throw new IllegalArgumentException("No email provided for user: " + copy.getUsername());
         }
-        if (user.getPassword() == null || user.getPassword().isBlank()) {
-            throw new IllegalArgumentException("No password provided for user: " + user.getUsername());
+        if (copy.getPassword() == null || copy.getPassword().isBlank()) {
+            throw new IllegalArgumentException("No password provided for user: " + copy.getUsername());
         }
-        if (usersByUsername.containsKey(user.getUsername())) {
-            throw new ConflictException("Username already exists: " + user.getUsername());
+        if (usersByUsername.containsKey(copy.getUsername())) {
+            throw new ConflictException("Username already exists: " + copy.getUsername());
         }
-        for (var email : user.getEmailAddresses()) {
+        for (var email : copy.getEmailAddresses()) {
             if (usersByEmail.containsKey(email)) {
                 throw new ConflictException("Email address already taken: " + email);
             }
         }
-        if (user.getRole() == null) {
-            user.setRole(Role.USER);
+        if (copy.getRole() == null) {
+            copy.setRole(Role.USER);
         }
-        var toBeAdded = new User(user); // defensive copy
-        usersByUsername.put(user.getUsername(), toBeAdded);
-        for (var email : user.getEmailAddresses()) {
+        var toBeAdded = new User(copy); // defensive copy
+        usersByUsername.put(copy.getUsername(), toBeAdded);
+        for (var email : copy.getEmailAddresses()) {
             usersByEmail.put(email, toBeAdded);
         }
     }
 
     @Override
     public synchronized Token authorize(Credentials credentials) throws WrongCredentialsException {
-        if (credentials.getUserId() == null || credentials.getUserId().isBlank()) {
-            throw new IllegalArgumentException("Missing user ID: " + credentials.getUserId());
+        var copy = new Credentials(credentials);
+        if (copy.getUserId() == null || copy.getUserId().isBlank()) {
+            throw new IllegalArgumentException("Missing user ID: " + copy.getUserId());
         }
-        if (credentials.getPassword() == null || credentials.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Missing password: " + credentials.getPassword());
+        if (copy.getPassword() == null || copy.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Missing password: " + copy.getPassword());
         }
         try {
-            String userId = credentials.getUserId();
+            String userId = copy.getUserId();
             User user = findUser(userId);
-            if (!credentials.getPassword().equals(user.getPassword())) {
+            if (!copy.getPassword().equals(user.getPassword())) {
                 throw new WrongCredentialsException("Wrong credentials for user: " + userId);
             }
             return new Token(user.getUsername(), user.getRole());

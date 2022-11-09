@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import it.unibo.ds.ws.ConflictException;
 import it.unibo.ds.ws.GsonUtils;
+import it.unibo.ds.ws.MissingException;
 import it.unibo.ds.ws.WrongCredentialsException;
 
 import java.net.URI;
@@ -110,6 +111,8 @@ public abstract class AbstractHttpClientStub {
                 return CompletableFuture.failedFuture(new IllegalArgumentException(response.body()));
             } else if (response.statusCode() == 401) { // unauthorized
                 return CompletableFuture.failedFuture(new WrongCredentialsException(response.body()));
+            } else if (response.statusCode() == 404) { // not found
+                return CompletableFuture.failedFuture(new MissingException(response.body()));
             } else if (response.statusCode() == 409) { // conflict
                 return CompletableFuture.failedFuture(new ConflictException(response.body()));
             } else {

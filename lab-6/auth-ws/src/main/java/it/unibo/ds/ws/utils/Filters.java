@@ -35,7 +35,7 @@ public class Filters {
                 }
             } else {
                 var accept = ctx.header("Accept");
-                if (accept != null || !accept.isBlank()) {
+                if (accept != null && !accept.isBlank()) {
                     throw new BadRequestResponse("Unexpected Accept header in request");
                 }
             }

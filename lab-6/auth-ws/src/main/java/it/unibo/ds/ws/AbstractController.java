@@ -28,7 +28,7 @@ public abstract class AbstractController {
     protected int getOptionalIntParam(Context context, String name, int defaultValue) {
         var value = context.queryParamAsClass(name, Integer.class)
                 .allowNullable()
-                .check(i -> i >= 0, "Parameter cannot be negative: " + name)
+                .check(i -> i == null || i >= 0, "Parameter cannot be negative: " + name)
                 .get();
         return Objects.requireNonNullElse(value, defaultValue);
     }
