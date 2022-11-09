@@ -1,12 +1,13 @@
-image: gradle:7.2-jdk11
-
-variables:
-  GOPTS: "--no-daemon --console=plain"
+image: gradle:latest
 
 build:
   stage: build
-  script: gradle classes testClasses javadoc $GOPTS
+  script: gradle classes testClasses
 
 test:
   stage: test
-  script: gradle check $GOPTS
+  script: gradle test
+  artifacts:
+    when: always
+    reports:
+      junit: '**/build/test-results/test/**/TEST-*.xml'
