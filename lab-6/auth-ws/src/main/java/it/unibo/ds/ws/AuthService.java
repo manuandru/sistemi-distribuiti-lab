@@ -10,6 +10,7 @@ import io.javalin.plugin.bundled.RouteOverviewPlugin;
 import it.unibo.ds.ws.tokens.TokenController;
 import it.unibo.ds.ws.users.UserController;
 import it.unibo.ds.ws.utils.Filters;
+import it.unibo.ds.ws.utils.Plugins;
 
 public class AuthService {
 
@@ -28,19 +29,15 @@ public class AuthService {
         server = Javalin.create(config -> {
             config.plugins.enableDevLogging();
             config.jsonMapper(new JavalinGsonAdapter(GsonUtils.createGson()));
-            config.plugins.register(routeOverviewPlugin());
-            config.plugins.register(openApiPlugin());
-            config.plugins.register(swaggerPlugin());
+            config.plugins.register(Plugins.openApiPlugin(API_VERSION, "/doc"));
+            config.plugins.register(Plugins.swaggerPlugin("/doc", "/ui"));
+            config.plugins.register(Plugins.routeOverviewPlugin("/routes"));
         });
 
-        // TODO register localAuthenticator into the server via Filters.
+        server.before(path("/*"), Filters.putSingletonInContext(Authenticator.class, localAuthenticator));
 
         UserController.of(path("/users")).registerRoutes(server);
         TokenController.of(path("/tokens")).registerRoutes(server);
-    }
-
-    public static void main(String[] args) {
-        new AuthService(args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_PORT).start();
     }
 
     public void start() {
@@ -55,24 +52,7 @@ public class AuthService {
         return BASE_URL + subPath;
     }
 
-    private static OpenApiPlugin openApiPlugin() {
-        OpenApiConfiguration configuration = new OpenApiConfiguration();
-        OpenApiInfo info = configuration.getInfo();
-        info.setTitle("Auth Service");
-        info.setVersion(API_VERSION);
-        info.setDescription("A simple WS managing users and their authorization in totally INSECURE way");
-        configuration.setDocumentationPath("/doc");
-        return new OpenApiPlugin(configuration);
-    }
-
-    private static SwaggerPlugin swaggerPlugin() {
-        SwaggerConfiguration configuration = new SwaggerConfiguration();
-        configuration.setUiPath("/doc/ui");
-        configuration.setDocumentationPath("/doc");
-        return new SwaggerPlugin(configuration);
-    }
-
-    private static RouteOverviewPlugin routeOverviewPlugin() {
-        return new RouteOverviewPlugin("/routes");
+    public static void main(String[] args) {
+        new AuthService(args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_PORT).start();
     }
 }

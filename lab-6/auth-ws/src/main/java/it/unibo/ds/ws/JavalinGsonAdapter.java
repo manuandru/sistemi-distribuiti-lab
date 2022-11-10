@@ -24,10 +24,10 @@ public class JavalinGsonAdapter implements JsonMapper {
 
     @Override
     public <T> T fromJsonString(String json, Type targetType) {
-        try {
-            return gson.fromJson(json, targetType);
-        } catch (JsonParseException e) {
-            throw new BadRequestResponse(e.getMessage());
-        }
+//        try {
+        return gson.fromJson(json, targetType);
+//        } catch (JsonParseException e) {
+//            TODO throw adequate exception
+//        }
     }
 }
