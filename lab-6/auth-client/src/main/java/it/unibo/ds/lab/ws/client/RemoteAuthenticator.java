@@ -116,7 +116,15 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             editAsync(userId, changes).join();
         } catch (CompletionException e) {
-            throw getCauseAs(e, ConflictException.class);
+            if (MissingException.class.isAssignableFrom(e.getCause().getClass())) {
+                throw new MissingException();
+            } else if (ConflictException.class.isAssignableFrom(e.getCause().getClass())) {
+                throw new ConflictException();
+            } else if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            } else {
+                throw e;
+            }
         }
     }
 
