@@ -18,11 +18,10 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     }
 
     @Override
-    public CompletableFuture<Collection<? extends String>> getAllNames(int skip, int limit, String filter) {
+    public CompletableFuture<Collection<? extends User>> getAllNames(int skip, int limit, String filter) {
         return CompletableFuture.supplyAsync(
                 () -> storage().getAll().stream()
-                        .map(User::getFullName)
-                        .filter(fullName -> fullName.contains(filter))
+                        .filter(user -> user.getUsername().contains(filter))
                         .skip(skip)
                         .limit(limit)
                         .collect(Collectors.toList())
@@ -38,6 +37,8 @@ public class UserApiImpl extends AbstractApi implements UserApi {
                         return user.getUsername();
                     } catch (ConflictException e) {
                         throw new ConflictResponse(e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        throw new BadRequestResponse(e.getMessage());
                     }
                 }
         );
@@ -81,6 +82,8 @@ public class UserApiImpl extends AbstractApi implements UserApi {
                         throw new NotFoundResponse(e.getMessage());
                     } catch (ConflictException e) {
                         throw new ConflictResponse(e.getMessage());
+                    }  catch (IllegalArgumentException e) {
+                        throw new BadRequestResponse(e.getMessage());
                     }
                 }
         );
