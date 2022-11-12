@@ -42,7 +42,14 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> registerAsync(User user) {
-        throw new Error("not implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users"))
+                .header("Accept", "application/json")
+                .POST(body(user))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
     }
 
     @Override
@@ -50,12 +57,18 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             registerAsync(user).join();
         } catch (CompletionException e) {
-            throw new Error("not implemented");
+            throw getCauseAs(e, ConflictException.class);
         }
     }
 
     private CompletableFuture<?> removeAsync(String userId) {
-        throw new Error("not implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users/" + userId))
+                .DELETE()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(Void.class));
     }
 
     @Override
@@ -63,12 +76,19 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             removeAsync(userId).join();
         } catch (CompletionException e) {
-            throw new Error("not implemented");
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
     private CompletableFuture<User> getAsync(String userId) {
-        throw new Error("not implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users/" + userId))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(User.class));
     }
 
     @Override
@@ -81,7 +101,14 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     private CompletableFuture<?> editAsync(String userId, User changes) {
-        throw new Error("not implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users/" + userId))
+                .header("Accept", "application/json")
+                .PUT(body(changes))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
     }
 
     @Override
@@ -89,16 +116,23 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         try {
             editAsync(userId, changes).join();
         } catch (CompletionException e) {
-            throw new Error("not implemented");
+            throw getCauseAs(e, ConflictException.class);
         }
     }
 
-    protected CompletableFuture<List<String>> getAllNamesAsync() {
-        throw new Error("not implemented");
+    protected CompletableFuture<List<User>> getAllNamesAsync() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users"))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeMany(User.class));
     }
 
     @Override
     public Set<? extends User> getAll() {
-        throw new Error("not implemented");
+        return new HashSet<>(getAllNamesAsync().join());
     }
 }
