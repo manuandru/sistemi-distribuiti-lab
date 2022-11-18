@@ -18,10 +18,11 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     }
 
     @Override
-    public CompletableFuture<Collection<? extends User>> getAllNames(int skip, int limit, String filter) {
+    public CompletableFuture<Collection<? extends String>> getAllNames(int skip, int limit, String filter) {
         return CompletableFuture.supplyAsync(
                 () -> storage().getAll().stream()
-                        .filter(user -> user.getUsername().contains(filter))
+                        .map(User::getUsername)
+                        .filter(username -> username.contains(filter))
                         .skip(skip)
                         .limit(limit)
                         .collect(Collectors.toList())

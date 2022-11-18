@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface UserApi {
 
-    CompletableFuture<Collection<? extends User>> getAllNames(int skip, int limit, String filter);
+    CompletableFuture<Collection<? extends String>> getAllNames(int skip, int limit, String filter);
 
     CompletableFuture<String> registerUser(User user);
 

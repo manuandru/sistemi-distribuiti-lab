@@ -42,7 +42,7 @@ public interface UserController extends Controller {
                             description = "An array containing the selected user names",
                             content = {
                                     @OpenApiContent(
-                                            from = User[].class,
+                                            from = String[].class,
                                             mimeType = ContentType.JSON
                                     )
                             }

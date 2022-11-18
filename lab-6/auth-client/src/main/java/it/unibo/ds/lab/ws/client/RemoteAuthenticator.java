@@ -4,12 +4,11 @@ import it.unibo.ds.ws.*;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class RemoteAuthenticator extends AbstractHttpClientStub implements Authenticator {
 
@@ -128,7 +127,7 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
         }
     }
 
-    protected CompletableFuture<List<User>> getAllNamesAsync() {
+    protected CompletableFuture<List<String>> getAllNamesAsync() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/users"))
                 .header("Accept", "application/json")
@@ -136,11 +135,31 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeMany(User.class));
+                .thenComposeAsync(deserializeMany(String.class));
     }
 
     @Override
     public Set<? extends User> getAll() {
-        return new HashSet<>(getAllNamesAsync().join());
+
+        var names = getAllNamesAsync().join();
+        var users = Collections.synchronizedSet(new HashSet<User>());
+
+        var executor = Executors.newCachedThreadPool();
+
+        for (var name : names) {
+            executor.execute(() -> {
+                var user = getAsync(name).join();
+                users.add(user);
+            });
+        }
+        executor.shutdown();
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // silently ignore: maybe less are returned
+        }
+
+        return users;
     }
 }

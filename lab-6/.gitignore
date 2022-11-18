@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/vim,eclipse,intellij,visualstudiocode
 
+# Added for macos
+.DS_Store
+
 .gradle/
 build/
 .idea/
