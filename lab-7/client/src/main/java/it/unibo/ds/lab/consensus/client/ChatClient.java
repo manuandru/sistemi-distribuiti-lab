@@ -2,16 +2,14 @@ package it.unibo.ds.lab.consensus.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import io.etcd.jetcd.ByteSequence;
-import io.etcd.jetcd.Client;
-import io.etcd.jetcd.KV;
-import io.etcd.jetcd.Watch;
+import io.etcd.jetcd.*;
 import io.etcd.jetcd.common.exception.EtcdException;
 import io.etcd.jetcd.watch.WatchEvent;
 import it.unibo.ds.lab.consensus.presentation.GsonUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +64,18 @@ public class ChatClient {
         KV kv = client.getKVClient();
         var key = ByteSequence.from(chat.getBytes());
         while (true) {
-            // TODO: put the message as a new value on the kv store
+            int readBytes = System.in.read(buffer);
+            if (readBytes < 0) {
+                var message = new Message(username, "exited!\n".getBytes());
+                kv.put(key, ByteSequence.from(gson.toJson(message).getBytes())).get();
+                break;
+            } else {
+                var msgBody = new byte[readBytes];
+                System.arraycopy(buffer, 0, msgBody, 0, readBytes);
+                var message = new Message(username, msgBody);
+                kv.put(key, ByteSequence.from(gson.toJson(message).getBytes())).get();
+            }
+
         }
     }
 
@@ -74,7 +83,20 @@ public class ChatClient {
         OutputStream outputStream = System.out;
         ByteSequence key = ByteSequence.from(chat.getBytes());
         Watch.Listener listener = Watch.listener(response -> {
-            // TODO: implement the callback in such a way to output the message in the output stream
+            response.getEvents().stream()
+                    .map(WatchEvent::getKeyValue)
+                    .map(KeyValue::getValue)
+                    .map(ByteSequence::toString)
+                    .map(str -> gson.fromJson(str, Message.class))
+                    .map(Message::toPrettyString)
+                    .map(String::getBytes)
+                    .forEach(bytes -> {
+                        try {
+                            outputStream.write(bytes);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         });
         Watch watch = client.getWatchClient();
         Watch.Watcher watcher = watch.watch(key, listener);
