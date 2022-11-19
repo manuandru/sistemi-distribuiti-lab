@@ -1,17 +1,13 @@
 package it.unibo.ds.lab.consensus.client;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.common.exception.EtcdException;
-import io.etcd.jetcd.watch.WatchEvent;
 import it.unibo.ds.lab.consensus.presentation.GsonUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.Duration;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -71,26 +67,17 @@ public class ChatClient {
             if (readBytes < 0) {
                 var message = new Message(username, "exited!\n".getBytes());
                 kv.put(key, ByteSequence.from(gson.toJson(message).getBytes())).get();
-                printOnOutputStream(message, System.out);
+                exit.get();
                 return;
             } else {
                 var msgBody = new byte[readBytes];
                 System.arraycopy(buffer, 0, msgBody, 0, readBytes);
                 var message = new Message(username, msgBody);
-                var result = kv.put(key, ByteSequence.from(gson.toJson(message).getBytes())).get();
-                System.out.println(result);
-                printOnOutputStream(message, System.out);
+                kv.put(key, ByteSequence.from(gson.toJson(message).getBytes())).get();
             }
         }
     }
 
-    private static void printOnOutputStream(Message message, OutputStream outputStream) {
-        try {
-            outputStream.write(message.toPrettyString().getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private static void propagateServerToStdout(String username, String chat, Client client) {
         OutputStream outputStream = System.out;
@@ -98,12 +85,13 @@ public class ChatClient {
         Watch.Listener listener = Watch.listener(response -> {
             response.getEvents().forEach(watchEvent -> {
                 var message = gson.fromJson(watchEvent.getKeyValue().getValue().toString(), Message.class);
-                if (!username.equals(message.getUsername())) {
-                    try {
-                        outputStream.write(message.toPrettyString().getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                try {
+                    outputStream.write(message.toPrettyString().getBytes());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (username.equals(message.getUsername()) && "exited!\n".equals(message.getBody())) {
+                    exit.complete(null);
                 }
             });
         });
