@@ -16,7 +16,7 @@ public class TestChatClient extends BaseTest {
 
     @BeforeEach
     public void startEndpoints() throws IOException, InterruptedException {
-        try (var dockerComposeUp = startProcessInDir("..", "docker-compose", "up", "-d")) {
+        try (var dockerComposeUp = startProcessInDir("..", "docker", "compose", "up", "-d")) {
             dockerComposeUp.process().waitFor();
             dockerComposeUp.printDebugInfo("docker-compose-up");
         }
@@ -24,7 +24,7 @@ public class TestChatClient extends BaseTest {
 
     @AfterEach
     public void stopEndpoints() throws IOException, InterruptedException {
-        try (var dockerComposeDown = startProcessInDir("..", "docker-compose", "down")) {
+        try (var dockerComposeDown = startProcessInDir("..", "docker", "compose", "down")) {
             dockerComposeDown.process().waitFor();
             dockerComposeDown.printDebugInfo("docker-compose-down");
         }
