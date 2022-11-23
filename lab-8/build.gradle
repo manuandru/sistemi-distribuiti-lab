@@ -32,7 +32,11 @@ protobuf {
         grpc { artifact = libs.grpc.generator.java.get() }
     }
     generateProtoTasks {
-        all()*.plugins { grpc {} }
+        all().each {
+            it.plugins {
+                grpc {}
+            }
+        }
     }
 }
 
