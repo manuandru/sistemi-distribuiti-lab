@@ -9,3 +9,5 @@ pluginManagement {
 }
 
 rootProject.name = 'lab-grpc'
+
+enableFeaturePreview("VERSION_CATALOGS")

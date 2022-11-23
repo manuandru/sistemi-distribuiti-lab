@@ -1,0 +1,18 @@
+[versions]
+grpc = "1.51.0"
+proto = "3.21.9"
+junit = "4.12"
+
+[plugins]
+protobuf = "com.google.protobuf:0.9.1"
+
+[libraries]
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
+grpc-generator-java = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
+grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java-util", version.ref = "proto" }
+protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "proto" }
+tomcat-annotations = "org.apache.tomcat:annotations-api:6.0.53"
+junit = { module = "junit:junit", version.ref = "junit" }

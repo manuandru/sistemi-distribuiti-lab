@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
-    // ASSUMES GRADLE 5.6 OR HIGHER. Use plugin version 0.8.10 with earlier gradle versions
-    id 'com.google.protobuf' version '0.8.18'
+    alias(libs.plugins.protobuf)
     // Generate IntelliJ IDEA's .idea & .iml project files
     id 'idea'
 }
@@ -13,36 +12,24 @@ repositories {
     mavenLocal()
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-// IMPORTANT: You probably want the non-SNAPSHOT version of gRPC. Make sure you
-// are looking at a tagged version of the example and not "master"!
-
-// Feel free to delete the comment at the next line. It is just for safely
-// updating the version in our release process.
-def grpcVersion = '1.42.1' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.19.1'
-def protocVersion = protobufVersion
-
 dependencies {
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
-    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.stub)
+    compileOnly(libs.tomcat.annotations)
 
     // examples/advanced need this for JsonFormat
-    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    implementation(libs.protobuf.java)
 
-    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    runtimeOnly(libs.grpc.netty.shaded)
 
-    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
-    testImplementation "junit:junit:4.12"
+    testImplementation(libs.grpc.testing)
+    testImplementation(libs.junit)
 }
 
 protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    protoc { artifact = libs.protobuf.protoc.get() }
     plugins {
-        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+        grpc { artifact = libs.grpc.generator.java.get() }
     }
     generateProtoTasks {
         all()*.plugins { grpc {} }
