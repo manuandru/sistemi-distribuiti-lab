@@ -1,4 +1,3 @@
-
 pluginManagement {
     repositories {
         maven { // The google mirror is less flaky than mavenCentral()
@@ -11,3 +10,10 @@ pluginManagement {
 rootProject.name = 'lab-grpc'
 
 enableFeaturePreview("VERSION_CATALOGS")
+
+include("greetings")
+include("auth-common")
+include("auth-presentation")
+include("auth-test")
+include("auth-client")
+include("auth-server")
