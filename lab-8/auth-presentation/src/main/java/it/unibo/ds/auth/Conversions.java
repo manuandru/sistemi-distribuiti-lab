@@ -26,14 +26,17 @@ public class Conversions {
     }
 
     public static Proto.Credentials toProto(Credentials value) {
-        return Proto.Credentials.newBuilder()
-                .setId(value.getUserId())
-                .setPassword(value.getPassword())
-                .build();
+        var builder = Proto.Credentials.newBuilder();
+        if (value.getUserId() != null) builder.setId(value.getUserId());
+        if (value.getPassword() != null) builder.setPassword(value.getPassword());
+        return builder.build();
     }
 
     public static Credentials toJava(Proto.Credentials value) {
-        return new Credentials(value.getId(), value.getPassword());
+        return new Credentials(
+                value.getId(),
+                value.getPassword()
+        );
     }
 
     private static final long SECONDS_PER_DAY = 60 * 60 * 24;
@@ -49,23 +52,23 @@ public class Conversions {
     }
 
     public static Proto.User toProto(User value) {
-        return Proto.User.newBuilder()
-                .setFullName(value.getFullName())
-                .setUsername(value.getUsername())
-                .setPassword(value.getPassword())
-                .setRole(toProto(value.getRole()))
-                .addAllEmailAddresses(value.getEmailAddresses())
-                .setBirthDate(toProto(value.getBirthDate()))
-                .build();
+        var builder = Proto.User.newBuilder();
+        if (value.getFullName() != null) builder.setFullName(value.getFullName());
+        if (value.getUsername() != null) builder.setUsername(value.getUsername());
+        if (value.getPassword() != null) builder.setPassword(value.getPassword());
+        if (value.getRole() != null) builder.setRole(toProto(value.getRole()));
+        if (value.getEmailAddresses() != null) builder.addAllEmailAddresses(value.getEmailAddresses());
+        if (value.getBirthDate() != null) builder.setBirthDate(toProto(value.getBirthDate()));
+        return builder.build();
     }
 
     public static User toJava(Proto.User value) {
         return new User(
-                value.getFullName(),
-                value.getUsername(),
-                value.getPassword(),
-                toJava(value.getBirthDate()),
-                toJava(value.getRole()),
+                value.hasBirthDate() ? value.getFullName() : null,
+                value.hasUsername() ? value.getUsername() : null,
+                value.hasPassword() ? value.getPassword() : null,
+                value.hasBirthDate() ? toJava(value.getBirthDate()) : null,
+                value.hasRole() ? toJava(value.getRole()) : null,
                 value.getEmailAddressesList()
         );
     }

@@ -35,10 +35,11 @@ message User {
 
 enum StatusCode {
   OK = 0;
-  CONFLICT = 1;
-  WRONG_CREDENTIALS = 2;
-  NOT_FOUND = 3;
-  GENERIC_ERROR = 4;
+  BAD_CONTENT = 1;
+  CONFLICT = 2;
+  WRONG_CREDENTIALS = 3;
+  NOT_FOUND = 4;
+  GENERIC_ERROR = 5;
 }
 
 message Status {

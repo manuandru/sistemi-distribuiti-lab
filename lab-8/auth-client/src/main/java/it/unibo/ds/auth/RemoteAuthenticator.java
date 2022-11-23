@@ -32,6 +32,7 @@ public class RemoteAuthenticator implements Authenticator {
             case OK -> { }
             case CONFLICT -> throw new ConflictException(response.getStatus().getMessage());
             case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
             default -> throw new Error("Unexpected behaviour of server");
         }
     }
@@ -45,6 +46,7 @@ public class RemoteAuthenticator implements Authenticator {
             }
             case WRONG_CREDENTIALS -> throw new WrongCredentialsException(response.getStatus().getMessage());
             case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
             default -> throw new Error("Unexpected behaviour of server");
         }
     }
@@ -56,6 +58,7 @@ public class RemoteAuthenticator implements Authenticator {
             case OK -> { }
             case NOT_FOUND -> throw new MissingException(response.getStatus().getMessage());
             case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
             default -> throw new Error("Unexpected behaviour of server");
         }
     }
@@ -69,6 +72,7 @@ public class RemoteAuthenticator implements Authenticator {
             }
             case NOT_FOUND -> throw new MissingException(response.getStatus().getMessage());
             case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
             default -> throw new Error("Unexpected behaviour of server");
         }
     }
@@ -83,6 +87,7 @@ public class RemoteAuthenticator implements Authenticator {
             case NOT_FOUND -> throw new MissingException(response.getStatus().getMessage());
             case CONFLICT -> throw new ConflictException(response.getStatus().getMessage());
             case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
             default -> throw new Error("Unexpected behaviour of server");
         }
     }

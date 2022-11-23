@@ -58,6 +58,12 @@ public class AuthService extends AuthenticatorGrpc.AuthenticatorImplBase{
                             setStatus(statusOf(Proto.StatusCode.CONFLICT, e.getMessage()))
                             .build()
             );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
         } catch (Throwable e) {
             responseObserver.onNext(
                     Proto.EmptyResponse.newBuilder().
@@ -78,10 +84,16 @@ public class AuthService extends AuthenticatorGrpc.AuthenticatorImplBase{
                             .setToken(Conversions.toProto(result))
                             .build()
             );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.TokenResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
         } catch (WrongCredentialsException e) {
             responseObserver.onNext(
                     Proto.TokenResponse.newBuilder().
-                            setStatus(statusOf(Proto.StatusCode.UNRECOGNIZED, e.getMessage()))
+                            setStatus(statusOf(Proto.StatusCode.WRONG_CREDENTIALS, e.getMessage()))
                             .build()
             );
         } catch (Throwable e) {
@@ -150,6 +162,12 @@ public class AuthService extends AuthenticatorGrpc.AuthenticatorImplBase{
             responseObserver.onNext(
                     Proto.EmptyResponse.newBuilder().
                             setStatus(statusOf(Proto.StatusCode.NOT_FOUND, e.getMessage()))
+                            .build()
+            );
+        } catch (ConflictException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.CONFLICT, e.getMessage()))
                             .build()
             );
         } catch (Throwable e) {
