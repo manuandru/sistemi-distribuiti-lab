@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "it.unibo.ds.grpc.greeting";
+option java_package = "it.unibo.ds.greeting";
 option java_outer_classname = "HelloWorldProto";
 
 package greeting;

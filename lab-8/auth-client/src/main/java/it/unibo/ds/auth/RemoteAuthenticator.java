@@ -17,7 +17,9 @@ public class RemoteAuthenticator implements Authenticator {
     private final AuthenticatorGrpc.AuthenticatorStub client;
 
     public RemoteAuthenticator(String hostname, int port) {
-        var channel = ManagedChannelBuilder.forAddress(hostname, port).build();
+        var channel = ManagedChannelBuilder.forAddress(hostname, port)
+                .usePlaintext()
+                .build();
         blockingClient = AuthenticatorGrpc.newBlockingStub(channel);
         client = AuthenticatorGrpc.newStub(channel);
     }

@@ -1,4 +1,4 @@
-package it.unibo.ds.auth.greeting;
+package it.unibo.ds.greeting;
 
 
 import io.grpc.Server;

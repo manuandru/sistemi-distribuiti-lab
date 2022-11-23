@@ -1,4 +1,4 @@
-package it.unibo.ds.auth.greeting;
+package it.unibo.ds.greeting;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.ManagedChannelBuilder;

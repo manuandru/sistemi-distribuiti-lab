@@ -1,7 +1,7 @@
-package it.unibo.ds.auth.greeting;
+package it.unibo.ds.greeting;
 
 import com.google.protobuf.util.JsonFormat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package it.unibo.ds.auth.greeting;
+package it.unibo.ds.greeting;
 
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
@@ -6,9 +6,9 @@ import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.internal.testing.StreamRecorder;
 import io.grpc.stub.StreamObserver;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,14 +25,14 @@ public class TestGreetingService {
     private ManagedChannel channel;
     private Server server;
 
-    @Before
+    @BeforeEach
     public void beforeEach() throws IOException {
         server = InProcessServerBuilder.forName("greeting").addService(new MyGreetingService()).build();
         channel = InProcessChannelBuilder.forName("greeting").usePlaintext().build();
         server.start();
     }
 
-    @After
+    @AfterEach
     public void afterEach() throws InterruptedException {
         channel.shutdown().awaitTermination(1, TimeUnit.SECONDS);
         server.shutdown().awaitTermination();
