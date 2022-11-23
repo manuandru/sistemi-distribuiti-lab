@@ -42,7 +42,7 @@ public class Conversions {
     private static final long SECONDS_PER_DAY = 60 * 60 * 24;
 
     public static LocalDate toJava(Timestamp value) {
-        return LocalDate.ofEpochDay(value.getSeconds());
+        return LocalDate.ofEpochDay(value.getSeconds() / SECONDS_PER_DAY);
     }
 
     public static Timestamp toProto(LocalDate value) {
