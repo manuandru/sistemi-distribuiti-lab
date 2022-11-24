@@ -54,6 +54,8 @@ Using gPRC usually involves:
 
 - adopting [`protoc`](https://github.com/protocolbuffers/protobuf/releases/latest) as the __code-generator__
 
+![gRPC concept](https://grpc.io/img/landing-2.svg)
+
 ### What kind of services
 
 Notably, gRPC-based services support _not only_ "ordinary" request-response methods, but also:
@@ -89,8 +91,12 @@ gRPC provides a number of plugins letting clients and services interact:
 
 ### Exercise 1
 
-> **Goal:** model the `Authenticator` service from previous labs via `proto` and implement it via gRPC+Protobuf
+> **Goal:** model the `Authenticator` service from previous labs via `proto` and implement it via gRPC+Protobuf.
+> To do so, just fill the holes in the many `auth-*` modules included in this repo.
+
+![Modules structure](http://www.plantuml.com/plantuml/svg/TP1DQiGm38NtEON8FZt048Q1Ng3q1gwh90R_65bkk-ZXwx48k8X05dfw7_5xUXGsn3NuoQQGKyJ8CDzCvMDfYv3Y3AQ0Z1h9XAL9mqv061SZlh-_lSwmhlZ3ID7u-_r9xvJjI6LAd3xgfidJKRIzOAqEMv2-a7fC6JLYlMkg8p9gXB48y1ocIIu3w--o_2y_2B7FHxKXJoc3t7xmSjQvTEKm5xwSE2P6yBWnf0r6y0Pyk0Bj-pwGi2c4b_vBs9p7PamIJeBsob9ZM3mmVjRW_m00)
 
 ### Exercise 2
 
-> **Goal:** Use the provided `.proto` file to generate a client stub for the `Greeter` service in some language of choice (different than Java), and let the new client interact with the Java-based server
+> **Goal:** Use the provided `.proto` file to generate a client (or server) stub for the `Authenticator` service in some language of choice (different than Java), and let the new client (or server) interact with the Java-based server (or client)
+
