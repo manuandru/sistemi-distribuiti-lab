@@ -52,24 +52,10 @@ public class Conversions {
     }
 
     public static Proto.User toProto(User value) {
-        var builder = Proto.User.newBuilder();
-        if (value.getFullName() != null) builder.setFullName(value.getFullName());
-        if (value.getUsername() != null) builder.setUsername(value.getUsername());
-        if (value.getPassword() != null) builder.setPassword(value.getPassword());
-        if (value.getRole() != null) builder.setRole(toProto(value.getRole()));
-        if (value.getEmailAddresses() != null) builder.addAllEmailAddresses(value.getEmailAddresses());
-        if (value.getBirthDate() != null) builder.setBirthDate(toProto(value.getBirthDate()));
-        return builder.build();
+        throw new Error("not implemented");
     }
 
     public static User toJava(Proto.User value) {
-        return new User(
-                value.hasBirthDate() ? value.getFullName() : null,
-                value.hasUsername() ? value.getUsername() : null,
-                value.hasPassword() ? value.getPassword() : null,
-                value.hasBirthDate() ? toJava(value.getBirthDate()) : null,
-                value.hasRole() ? toJava(value.getRole()) : null,
-                value.getEmailAddressesList()
-        );
+        throw new Error("not implemented");
     }
 }

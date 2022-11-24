@@ -51,35 +51,19 @@ message EmptyResponse {
   Status status = 1;
 }
 
-message TokenResponse {
-  Status status = 1;
-  Token token = 2;
-}
+// TODO define request-response messages, where needed
 
-message UserResponse {
-  Status status = 1;
-  User user = 2;
-}
-
-message UserID {
-  string id = 1;
-}
-
-message EditRequest {
-  string userID = 1;
-  User changes = 2;
-}
 
 service Authenticator {
   rpc Register(User) returns (EmptyResponse) { }
 
-  rpc Authorize(Credentials) returns (TokenResponse) { }
+  rpc Authorize(/* input args */) returns (/* output args */) { }
 
-  rpc Remove(UserID) returns (EmptyResponse) { }
+  rpc Remove(/* input args */) returns (/* output args */) { }
 
-  rpc Get(UserID) returns (UserResponse) { }
+  rpc Get(/* input args */) returns (/* output args */) { }
 
-  rpc Edit(EditRequest) returns (EmptyResponse) { }
+  rpc Edit(/* input args */) returns (/* output args */) { }
 
   rpc GetAll(google.protobuf.Empty) returns (stream User) { }
 }
