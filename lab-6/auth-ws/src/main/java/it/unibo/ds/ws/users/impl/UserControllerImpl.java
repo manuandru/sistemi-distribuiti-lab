@@ -24,8 +24,7 @@ public class UserControllerImpl extends AbstractController implements UserContro
         UserApi api = getApi(context);
         var futureResult = api.getAllNames(
                 getOptionalIntParam(context, "skip", 0),
-                // TODO: Api say default limit = 10, but test cannot pass
-                getOptionalIntParam(context, "limit", 20),
+                getOptionalIntParam(context, "limit", 10),
                 getOptionalStringParam(context, "filter", "")
         );
         asyncReplyWithBody(context, "application/json", futureResult);

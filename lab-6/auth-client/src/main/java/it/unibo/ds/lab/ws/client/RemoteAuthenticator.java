@@ -128,8 +128,9 @@ public class RemoteAuthenticator extends AbstractHttpClientStub implements Authe
     }
 
     protected CompletableFuture<List<String>> getAllNamesAsync() {
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/users"))
+                .uri(resourceUri(String.format("/users/?limit=%d", Integer.MAX_VALUE)))
                 .header("Accept", "application/json")
                 .GET()
                 .build();
