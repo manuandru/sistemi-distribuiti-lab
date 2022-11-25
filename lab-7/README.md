@@ -16,8 +16,21 @@ When running a `ChatClient` you should specify:
 - the name of the chat (String), this is the key on which the client puts its messages and listens;
 - the etcd servers (String ...).
 
-Note: if a client connects to the servers when messages have already been put on the key-value store just ignore them for that client.
+### Conventions
 
+- if a client connects to the servers when messages have already been put on the key-value store just ignore them for that client;
+- you should use the `Message` class to embody the text and send the serialised message to the servers;
+- when listening to an event you should deserialise the message before send it to the output stream;
+- when a client leaves the chat it sends a message -- "__exited!__" -- to notify all members;
+- you can assume that all usernames in a chat are unique.
+
+### Race hazard
+
+Watch out for all possible races! In particular:
+- a client before stopping must read and print its own exit message;
+- a client mustn't print messages after its own exit message.
+
+To serve this purpose you should use a `CountDownLatch` to wait until the proper exit message is received.
 
 ## Tests
 
@@ -26,8 +39,3 @@ In a nutshell, before running a test one etcd cluster is set up.
 The cluster is composed of 3 etcd servers, each one running on a docker container.
 At the end of a test the cluster is shut down.
 If you are a curious person take a look at the `docker-compose.yml`.
-
-
-Note: currently, there is no CI for this repository because running `docker compose` inside a docker container it's not trivial at all.
-This is not an issue.
-The purpose of this exercise is to make you familiar with a technology for distributed data store and to reason on how it works behind the scene (the raft consensus algorithm).

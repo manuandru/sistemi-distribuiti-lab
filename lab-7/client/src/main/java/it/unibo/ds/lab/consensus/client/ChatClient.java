@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 
@@ -46,7 +47,9 @@ public class ChatClient {
             System.out.printf("Contacting host(s) %s...\n", Arrays.toString(servers));
             Client client = Client.builder().endpoints(servers).build();
             System.out.println("Connection established");
-            chatImpl(username, chat, client);
+            CountDownLatch latch = new CountDownLatch(1);
+            chatImpl(username, chat, client, latch);
+            latch.await();
             System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,8 +59,8 @@ public class ChatClient {
         }
     }
 
-    private static void chatImpl(String username, String chat, Client client) throws IOException, ExecutionException, InterruptedException {
-        propagateServerToStdout(username, chat, client);
+    private static void chatImpl(String username, String chat, Client client, CountDownLatch latch) throws IOException, ExecutionException, InterruptedException {
+        propagateServerToStdout(username, chat, client, latch);
         propagateStdinToServer(username, chat, client);
     }
 
@@ -70,7 +73,7 @@ public class ChatClient {
         }
     }
 
-    private static void propagateServerToStdout(String username, String chat, Client client) {
+    private static void propagateServerToStdout(String username, String chat, Client client, CountDownLatch latch) {
         OutputStream outputStream = System.out;
         ByteSequence key = ByteSequence.from(chat.getBytes());
         Watch.Listener listener = Watch.listener(response -> {
