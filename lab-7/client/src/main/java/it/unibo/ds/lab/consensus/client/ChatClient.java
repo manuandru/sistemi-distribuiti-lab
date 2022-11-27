@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class ChatClient {
@@ -81,19 +80,17 @@ public class ChatClient {
     private static void propagateServerToStdout(String username, String chat, Client client, CountDownLatch latch) {
         OutputStream outputStream = System.out;
         ByteSequence key = ByteSequence.from(chat.getBytes());
-        Watch.Listener listener = Watch.listener(response -> {
-            response.getEvents().forEach(watchEvent -> {
-                var message = gson.fromJson(watchEvent.getKeyValue().getValue().toString(), Message.class);
-                try {
-                    outputStream.write(message.toPrettyString().getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                if (username.equals(message.getUsername()) && EXIT_MESSAGE.equals(message.getBody())) {
-                    latch.countDown();
-                }
-            });
-        });
+        Watch.Listener listener = Watch.listener(response -> response.getEvents().forEach(watchEvent -> {
+            var message = gson.fromJson(watchEvent.getKeyValue().getValue().toString(), Message.class);
+            try {
+                outputStream.write(message.toPrettyString().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (username.equals(message.getUsername()) && EXIT_MESSAGE.equals(message.getBody())) {
+                latch.countDown();
+            }
+        }));
         Watch watch = client.getWatchClient();
         Watch.Watcher watcher = watch.watch(key, listener);
     }
