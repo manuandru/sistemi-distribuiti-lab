@@ -39,22 +39,51 @@ public class RemoteAuthenticator implements Authenticator {
 
     @Override
     public Token authorize(Credentials credentials) throws WrongCredentialsException {
-        throw new Error("not implemented");
+        var response = blockingClient.authorize(Conversions.toProto(credentials));
+        switch (response.getStatus().getCode()) {
+            case OK -> { return Conversions.toJava(response.getToken()); }
+            case WRONG_CREDENTIALS -> throw new WrongCredentialsException(response.getStatus().getMessage());
+            case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
+            default -> throw new Error("Unexpected behaviour of server");
+        }
     }
 
     @Override
     public void remove(String userId) throws MissingException {
-        throw new Error("not implemented");
+        var response = blockingClient.remove(Proto.UserID.newBuilder().setUsername(userId).build());
+        switch (response.getStatus().getCode()) {
+            case OK -> { }
+            case MISSING_CONTENT -> throw new MissingException(response.getStatus().getMessage());
+            case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
+            default -> throw new Error("Unexpected behaviour of server");
+        }
     }
 
     @Override
     public User get(String userId) throws MissingException {
-        throw new Error("not implemented");
+        var response = blockingClient.get(Proto.UserID.newBuilder().setUsername(userId).build());
+        switch (response.getStatus().getCode()) {
+            case OK -> { return Conversions.toJava(response.getUser()); }
+            case MISSING_CONTENT -> throw new MissingException(response.getStatus().getMessage());
+            case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
+            default -> throw new Error("Unexpected behaviour of server");
+        }
     }
 
     @Override
     public void edit(String userId, User changes) throws MissingException, ConflictException {
-        throw new Error("not implemented");
+        var response = blockingClient.edit(Conversions.toProto(userId, changes));
+        switch (response.getStatus().getCode()) {
+            case OK -> { }
+            case CONFLICT -> throw new ConflictException(response.getStatus().getMessage());
+            case MISSING_CONTENT -> throw new MissingException(response.getStatus().getMessage());
+            case GENERIC_ERROR -> throw new IllegalStateException(response.getStatus().getMessage());
+            case BAD_CONTENT -> throw new IllegalArgumentException(response.getStatus().getMessage());
+            default -> throw new Error("Unexpected behaviour of server");
+        }
     }
 
     private class UserStreamCollector implements StreamObserver<Proto.User> {

@@ -67,22 +67,127 @@ public class AuthService extends AuthenticatorGrpc.AuthenticatorImplBase {
 
     @Override
     public void authorize(Proto.Credentials request, StreamObserver<Proto.TokenResponse> responseObserver) {
-        throw new Error("not implemented");
+        try {
+            var token = auth.authorize(Conversions.toJava(request));
+            responseObserver.onNext(
+                    Proto.TokenResponse.newBuilder()
+                            .setStatus(ok())
+                            .setToken(Conversions.toProto(token))
+                            .build()
+            );
+        } catch (WrongCredentialsException e) {
+            responseObserver.onNext(
+                    Proto.TokenResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.WRONG_CREDENTIALS, e.getMessage()))
+                            .build()
+            );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.TokenResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (Throwable e) {
+            responseObserver.onNext(
+                    Proto.TokenResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.GENERIC_ERROR, e.getMessage()))
+                            .build()
+            );
+        }
+        responseObserver.onCompleted();
     }
 
     @Override
     public void remove(Proto.UserID request, StreamObserver<Proto.EmptyResponse> responseObserver) {
-        throw new Error("not implemented");
+        try {
+            auth.remove(request.getUsername());
+            responseObserver.onNext(Proto.EmptyResponse.newBuilder().setStatus(ok()).build());
+        } catch (MissingException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.MISSING_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (Throwable e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.GENERIC_ERROR, e.getMessage()))
+                            .build()
+            );
+        }
+        responseObserver.onCompleted();
     }
 
     @Override
     public void get(Proto.UserID request, StreamObserver<Proto.UserResponse> responseObserver) {
-        throw new Error("not implemented");
+        try {
+            var user = auth.get(request.getUsername());
+            System.out.println(user);
+            responseObserver.onNext(
+                    Proto.UserResponse.newBuilder()
+                            .setStatus(ok())
+                            .setUser(Conversions.toProto(user))
+                            .build()
+            );
+        } catch (MissingException e) {
+            responseObserver.onNext(
+                    Proto.UserResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.MISSING_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.UserResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (Throwable e) {
+            responseObserver.onNext(
+                    Proto.UserResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.GENERIC_ERROR, e.getMessage()))
+                            .build()
+            );
+        }
+        responseObserver.onCompleted();
     }
 
     @Override
     public void edit(Proto.EditRequest request, StreamObserver<Proto.EmptyResponse> responseObserver) {
-        throw new Error("not implemented");
+        try {
+            auth.edit(request.getUsername(), Conversions.toJava(request.getChanges()));
+            responseObserver.onNext(Proto.EmptyResponse.newBuilder().setStatus(ok()).build());
+        } catch (MissingException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.MISSING_CONTENT, e.getMessage()))
+                            .build()
+            );
+        }  catch (ConflictException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.CONFLICT, e.getMessage()))
+                            .build()
+            );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.BAD_CONTENT, e.getMessage()))
+                            .build()
+            );
+        } catch (Throwable e) {
+            responseObserver.onNext(
+                    Proto.EmptyResponse.newBuilder().
+                            setStatus(statusOf(Proto.StatusCode.GENERIC_ERROR, e.getMessage()))
+                            .build()
+            );
+        }
+        responseObserver.onCompleted();
     }
 
     @Override

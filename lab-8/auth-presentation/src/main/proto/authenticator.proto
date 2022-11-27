@@ -40,6 +40,7 @@ enum StatusCode {
   WRONG_CREDENTIALS = 3;
   NOT_FOUND = 4;
   GENERIC_ERROR = 5;
+  MISSING_CONTENT = 6;
 }
 
 message Status {
@@ -51,19 +52,36 @@ message EmptyResponse {
   Status status = 1;
 }
 
-// TODO define request-response messages, where needed
+message TokenResponse {
+  Status status = 1;
+  Token token = 2;
+}
+
+message UserID {
+  string username = 1;
+}
+
+message UserResponse {
+  Status status = 1;
+  User user = 2;
+}
+
+message EditRequest {
+  string username = 1;
+  User changes = 2;
+}
 
 
 service Authenticator {
   rpc Register(User) returns (EmptyResponse) { }
 
-  rpc Authorize(/* input args */) returns (/* output args */) { }
+  rpc Authorize(Credentials) returns (TokenResponse) { }
 
-  rpc Remove(/* input args */) returns (/* output args */) { }
+  rpc Remove(UserID) returns (EmptyResponse) { }
 
-  rpc Get(/* input args */) returns (/* output args */) { }
+  rpc Get(UserID) returns (UserResponse) { }
 
-  rpc Edit(/* input args */) returns (/* output args */) { }
+  rpc Edit(EditRequest) returns (EmptyResponse) { }
 
   rpc GetAll(google.protobuf.Empty) returns (stream User) { }
 }
