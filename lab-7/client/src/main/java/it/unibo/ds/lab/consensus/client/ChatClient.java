@@ -18,7 +18,6 @@ public class ChatClient {
     private static final Gson gson = GsonUtils.createGson();
     private static final int BUFFER_SIZE = 1024;
     private static final byte[] buffer = new byte[BUFFER_SIZE];
-
     private final static String EXIT_MESSAGE = "exited!\n";
     private static final CompletableFuture<?> exit = new CompletableFuture<>();
 
