@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  rabbitmq-service:
+    image: rabbitmq:3-management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: YOUR-NAME      # TODO customize
+      RABBITMQ_DEFAULT_PASS: YOUR-PASSWORD  # TODO customize
+    ports:
+      - "5672:5672"   # the port RabbitMQ will listen on
+      - "8080:15672"  # the port the dashboard web service will be available from
