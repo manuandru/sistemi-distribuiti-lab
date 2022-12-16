@@ -28,8 +28,8 @@ public abstract class Agent extends Thread {
 
     private Connection createConnection() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUsername("your name");
-        factory.setPassword("your password");
+        factory.setUsername("YOUR-NAME");
+        factory.setPassword("YOUR-PASSWORD");
         factory.setVirtualHost("/");
         factory.setHost("localhost");
         factory.setPort(5672);

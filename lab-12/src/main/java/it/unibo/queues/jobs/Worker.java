@@ -21,16 +21,19 @@ public class Worker extends Agent {
         var resultsQueue = masterName + ".results";
 
         // TODO declare queues
+        declareQueueForReceive(todoQueue, channel);
+        declareQueueForSend(resultsQueue, channel);
 
         log("Listening for jobs...");
-
         // NOTICE autoAck = false
-        channel.basicConsume(todoQueue, false, new JobConsumer(channel));
+        channel.basicConsume(todoQueue, false, new JobConsumer(channel, resultsQueue));
     }
 
     private class JobConsumer extends DefaultConsumer {
-        public JobConsumer(Channel channel) {
+        private final String resultsQueue;
+        public JobConsumer(Channel channel, String resultsQueue) {
             super(channel);
+            this.resultsQueue = resultsQueue;
         }
 
         private static final String VOWELS = "aeiouAEIOU";
@@ -52,9 +55,11 @@ public class Worker extends Agent {
 
             Job job = Job.fromBytes(body);
             log("Received new job request: %s", job);
-            Result result = null; // TODO count the vowels for the current job
+            Result result = this.countVowels(job); // TODO count the vowels for the current job
             log("Counted vowels: %d", result.getValue());
             // TODO return the partial result to the master
+            getChannel().basicPublish(this.resultsQueue, "", null, result.toBytes());
+            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
             log("Returning result to master: %s", result);
         }
     }
