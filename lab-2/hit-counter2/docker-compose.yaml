@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  # cf. https://hub.docker.com/_/mongo
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_USER: admin         # mongo admin username
+      MONGO_PASSWORD: password  # mongo admin password
+    ports:
+      - 27017:27017
+
+  # cf. https://hub.docker.com/_/mongo-express
+  mongo-dashboard:
+    depends_on:
+      - mongo
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081 # mongo bashboard port
+    environment:
+      ME_CONFIG_MONGO_DB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGO_DB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: 'mongo'
+
+  
+  server:
+    depends_on:
+      - mongo
+    image: manuelandruccioli/hit-counter2
+    restart: always
+    ports:
+      - 8080:8080 # server port
+    environment:
+      MONGO_USER: admin
+      MONGO_PASSWORD: password
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      HIT_COUNTER_PORT: 8080
+      HOSTNAME: server
+      REPLICA: "{{.Task.Slot}}"
+    deploy:
+      mode: replicated
+      replicas: 2

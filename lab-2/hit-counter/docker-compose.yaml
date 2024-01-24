@@ -1,0 +1,11 @@
+version: "3.9"
+    
+services:    
+  hc-frontend:
+    image: <your hit counter image here>
+    ports:
+      - "8080:80"
+    restart: always
+    # deploy:
+    #   mode: replicated
+    #   replicas: 10
