@@ -1,0 +1,15 @@
+image: gradle:latest
+
+before_script:
+  - chmod +x gradlew 
+
+variables:
+  GOPTS: "--no-daemon --console=plain"
+
+build:
+  stage: build
+  script: gradle classes javadoc $GOPTS
+
+test:
+  stage: test
+  script: gradle check $GOPTS
