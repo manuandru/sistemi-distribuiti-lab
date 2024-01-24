@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+}
+
+allprojects {
+    repositories {
+        maven {
+            url = "https://maven-central.storage-download.googleapis.com/maven2/"
+        }
+        mavenCentral()
+        mavenLocal()
+    }
+
+    group = "it.unibo.ds.grpc"
+    version = "0.2.0"
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+subprojects {
+    apply plugin: "java"
+
+    dependencies {
+        testImplementation(libs.junit)
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+    }
+}

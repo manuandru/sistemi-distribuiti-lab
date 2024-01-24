@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option java_multiple_files = false;
+option java_package = "it.unibo.ds.auth.grpc";
+option java_outer_classname = "Proto";
+
+package auth;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Token {
+  string username = 1;
+  Role role = 2;
+}
+
+enum Role {
+  ADMIN = 0;
+  USER = 1;
+}
+
+message Credentials {
+  string id = 1;
+  string password = 2;
+}
+
+message User {
+  optional string full_name = 1;
+  optional string username = 2;
+  optional string password = 3;
+  optional google.protobuf.Timestamp birth_date = 4;
+  repeated string email_addresses = 5;
+  optional Role role = 6;
+}
+
+enum StatusCode {
+  OK = 0;
+  BAD_CONTENT = 1;
+  CONFLICT = 2;
+  WRONG_CREDENTIALS = 3;
+  NOT_FOUND = 4;
+  GENERIC_ERROR = 5;
+  MISSING_CONTENT = 6;
+}
+
+message Status {
+  StatusCode code = 1;
+  string message = 2;
+}
+
+message EmptyResponse {
+  Status status = 1;
+}
+
+message TokenResponse {
+  Status status = 1;
+  Token token = 2;
+}
+
+message UserID {
+  string username = 1;
+}
+
+message UserResponse {
+  Status status = 1;
+  User user = 2;
+}
+
+message EditRequest {
+  string username = 1;
+  User changes = 2;
+}
+
+
+service Authenticator {
+  rpc Register(User) returns (EmptyResponse) { }
+
+  rpc Authorize(Credentials) returns (TokenResponse) { }
+
+  rpc Remove(UserID) returns (EmptyResponse) { }
+
+  rpc Get(UserID) returns (UserResponse) { }
+
+  rpc Edit(EditRequest) returns (EmptyResponse) { }
+
+  rpc GetAll(google.protobuf.Empty) returns (stream User) { }
+}

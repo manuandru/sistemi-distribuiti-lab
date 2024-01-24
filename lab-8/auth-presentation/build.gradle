@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    alias(libs.plugins.protobuf)
+    // Generate IntelliJ IDEA's .idea & .iml project files
+    id 'idea'
+}
+
+dependencies {
+    api(project(":auth-common"))
+    api(libs.grpc.protobuf)
+    api(libs.grpc.stub)
+    compileOnly(libs.tomcat.annotations)
+
+    runtimeOnly(libs.grpc.netty.shaded)
+
+    testImplementation(libs.grpc.testing)
+    testImplementation(libs.junit)
+}
+
+protobuf {
+    protoc { artifact = libs.protobuf.protoc.get() }
+    plugins {
+        grpc { artifact = libs.grpc.generator.java.get() }
+    }
+    generateProtoTasks {
+        all().each {
+            it.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+// Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
